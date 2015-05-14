@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/div/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Player</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
+    <style type="text/css">
+        html, body, div, object {
+            padding: 0;
+            margin: 0;
+            border: none;
+            left: 0;
+            top: 0;
+        }
+
+        body {
+            background-color: white;
+            padding: 0;
+            margin: 0;
+            left: 0;
+            top: 0;
+        }
+
+        #playerContainer {
+            display: block;
+            position: relative;
+            margin: 0px;
+            padding: 0px;
+            overflow: hidden;
+            box-sizing: border-box;
+            background-color: #b92c28;
+            border-right: 1px solid green;
+        }
+
+        .player {
+            display: block;
+            position: relative;
+            padding: 0px;
+            margin: 0px;
+            width: 480px;
+            height: 270px;
+        }
+
+
+        #console {
+            height: 200px;
+            overflow-y: scroll;
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .nv-el-current {
+            border: 1px solid green;
+        }
+
+
+    </style>
+    <script type='text/javascript' language='javascript' src='$MANAGER_WIDGET/Common/API/TVKeyValue.js'></script>
+    <script type='text/javascript' language='javascript' src='$MANAGER_WIDGET/Common/API/Widget.js'></script>
+    <script type='text/javascript' language='javascript' src='$MANAGER_WIDGET/Common/API/Plugin.js'></script>
+    <script type="text/javascript" language="javascript" src="$MANAGER_WIDGET/Common/af/2.0.0/sf.min.js"> </script>
+
+    <script type="text/javascript" language="javascript" src='$MANAGER_WIDGET/Common/af/../webapi/1.0/deviceapis.js'> </script>
+    <script type="text/javascript" language="javascript" src='$MANAGER_WIDGET/Common/af/../webapi/1.0/serviceapis.js'></script>
+    <script type="text/javascript" language="javascript" src='$MANAGER_WIDGET/Common/Define.js'> </script>
+    <!--<script type='text/javascript' language='javascript' src='$MANAGER_WIDGET/Common/af/2.0.0/sf.min.js'></script>-->
+
+    <script type="text/javascript" language="javascript" src="$MANAGER_WIDGET/Common/webapi/1.0/webapis.js"></script>
+
+    <object id="pluginAudio" border="0" classid="clsid:SAMSUNG-INFOLINK-AUDIO" style="opacity:0.0;backgroundcolor:#000000;width:0px;height:0px;"></object>
+    <object id="pluginInfolinkTV" border="0" classid="clsid:SAMSUNG-INFOLINK-TV" style="opacity:0.0;backgroundcolor:#000000;width:0px;height:0px;"></object>
+    <object id="pluginInfolw" border="0" classid="clsid:SAMSUNG-INFOLW" style="opacity:0.0;backgroundcolor:#000000;width:0px;height:0px;"></object>
+    <object id="pluginNetwork" border="0" classid="clsid:SAMSUNG-INFOLINK-NETWORK" style="opacity:0.0;backgroundcolor:#000000;width:0px;height:0px;"></object>
+    <object id="pluginNnavi" border="0" classid="clsid:SAMSUNG-INFOLINK-NNAVI" style="opacity:0.0;backgroundcolor:#000000;width:0px;height:0px;"></object>
+    <object id="externalPlugin" border="0" classid="clsid:SAMSUNG-INFOLINK-EXTERNALWIDGETINTERFACE" style="opacity:0.0;backgroundcolor:#000000;width:0px;height:0px;"></object>
+</head>
+<body>
+    <div class="container" nv-scope="main" nv-scope-current>
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Player 1.409</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div id="playerContainer">
+
+                </div>
+                <div class="col-md-12">
+                    <div class="progress">
+                        <div id="progressbar" class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                        </div>
+                    </div>
+                    <div class="pull-left">
+                        <div id="currentTime">0</div>
+                    </div>
+                    <div class="pull-right">
+                        <p id="duration">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <ul class="list-group">
+                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('file:///home/smarttv/Apps/player/videos/video_with_border.mp4')">video_with_border</a></li>
+                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://msk1.cdp.look1.ru/video/24110dc3-7c54-43b3-a114-6c6fe6bdeab2.mp4')">bunny border</a></li>
+                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://cdp.look1.ru/trailer/e9350309-194b-4e0d-b967-ccd4647baeb4.mp4')">стражи галактики</a></li>
+                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://msk1.cdp.look1.ru/video/a9122ea2-8fb6-44fa-bc87-e33df2dc230d.mp4')">cdp sintel</a></li>
+                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://cdp.look1.ru/video/54a61799-122b-4101-97f3-a3f962aa9e21.wvm')">look1 widewine</a></li>
+                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://yt-dash-mse-test.commondatastorage.googleapis.com/media/car-20120827-manifest.mpd')">mpd sample</a></li>
+                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://cdp.look1.ru/video/37bdaa51-808f-4d51-8eb0-87cf45713ea9/37bdaa51-808f-4d51-8eb0-87cf45713ea9.mpd')">sintel dash</a></li>
+                </ul>
+            </div>
+            <div class="col-md-12">
+                <button nv-el class="btn btn-default" id="rbw" onclick="videoPlayer.setPlaybackSpeed(-2)">
+                    <span class="glyphicon glyphicon-backward"></span> 2x
+                </button>
+                <button nv-el class="btn btn-default" id="jbw" aria-label="fast-backward" onclick="videoPlayer.stepBackward(10)">
+                    <span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
+                </button>
+                <button nv-el class="btn btn-default" id="stop" aria-label="Stop" onclick="videoPlayer.stop()">
+                    <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+                </button>
+                <button nv-el class="btn btn-default" id="pause" aria-label="Pause" onclick="videoPlayer.pause()">
+                    <span class="glyphicon glyphicon-pause" aria-hidden="true"></span>
+                </button>
+                <button nv-el nv-el-current class="btn btn-default" id="play" aria-label="Play" onclick="videoPlayer.play()">
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                </button>
+                <button nv-el class="btn btn-default" id="jfw" onclick="videoPlayer.stepForward(10)">
+                    <span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
+                </button>
+                <button nv-el class="btn btn-default" id="fwd" onclick="videoPlayer.setPlaybackSpeed(2)">
+                    2x <span class="glyphicon glyphicon-forward"></span>
+                </button>
+                <button nv-el class="btn btn-default" id="normalSpeed" onclick="videoPlayer.setPlaybackSpeed(1)">
+                    1x <span class="glyphicon glyphicon-forward"></span>
+                </button>
+                <button nv-el class="btn btn-default" id="fwd2" onclick="videoPlayer.setCurrentTime(64)"> to 65 sec </button>
+
+                <button nv-el class="btn btn-default" id="122" onclick="smallScreen()"> <span class="gliphicon glyphicon glyphicon-resize-small"></span> </button>
+                <button nv-el class="btn btn-default" id="123" onclick="fullScreen()"> <span class="glyphicon glyphicon-fullscreen"></span> </button>
+                <button nv-el class="btn btn-default" id="124" onclick="videoPlayer.getInfo()"> <span class="glyphicon glyphicon-info-sign"></span> </button>
+            </div>
+        </div>
+
+    </div>
+    <div class="container" id="console"></div>
+
+    <script>
+        function fullScreen(){
+            var plugin = videoPlayer.player.plugin;
+            plugin.style.position = 'fixed';
+            videoPlayer.setScreenSize(1280, 720);
+        }
+
+        function smallScreen() {
+            var plugin = videoPlayer.player.plugin;
+            plugin.style.position = 'relative';
+            videoPlayer.setScreenSize(470, 280);
+        }
+    </script>
+
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="js/console.js"></script>
+    <script type="text/javascript" src="js/player.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+</body>
+</html>
