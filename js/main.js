@@ -42,22 +42,22 @@
     }
 
     function start() {
-
         samsungStart();
 
         log('app start');
         log('location', location.href);
 
-        // movie 2db6c2ed-7b1e-4927-ad65-0eb36c48f6c5
-        // http://cdp.look1.ru/video/54a61799-122b-4101-97f3-a3f962aa9e21.wvm
-
-        var playerVideo = new VideoPlayer('samsung-plugin', {
+        var playerVideo = new VideoPlayer('samsung', {
             url: 'http://cdp.look1.ru/trailer/e9350309-194b-4e0d-b967-ccd4647baeb4.mp4',
-            containerId: 'playerContainer'
-            // url: 'https://msk1.cdp.look1.ru/video/54a61799-122b-4101-97f3-a3f962aa9e21.wvm'
-            // url: 'http://cdp.look1.ru/video/54a61799-122b-4101-97f3-a3f962aa9e21.wvm',
+            containerId: 'playerContainer',
+            drm: {
+                url: 'https://drm.look1.ru/lic',
+                heartbeatUrl: 'https://drm.look1.ru/hb',
+                portal: 'moreruswv'
+            },
+            width: 470,
+            height: 280
         });
-
 
         //var xhttp=new XMLHttpRequest();
         //xhttp.open("GET","$MANAGER_WIDGET/Common/webapi/1.0/webapis.js",false);
@@ -68,16 +68,20 @@
         var duration = 0;
 
         playerVideo.on('currentTime', function (seconds) {
+
             document.getElementById('currentTime').innerText = playerVideo.getCurrentTime();
             document.getElementById('progressbar').style.width = (seconds / (duration / 100)) + '%';
+
         });
 
 
         playerVideo.on('info', function (info) {
+
             log('duration', info.duration);
             info.duration = Math.floor( info.duration / 1000 );
             duration = info.duration;
             document.getElementById('duration').innerText = info.duration;
+
         });
 
         /*

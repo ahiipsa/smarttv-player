@@ -31,6 +31,8 @@
             box-sizing: border-box;
             background-color: #b92c28;
             border-right: 1px solid green;
+            width: 470px;
+            height: 280px;
         }
 
         .player {
@@ -84,9 +86,7 @@
         </div>
         <div class="row">
             <div class="col-md-6">
-                <div id="playerContainer">
-
-                </div>
+                <div id="playerContainer"></div>
                 <div class="col-md-12">
                     <div class="progress">
                         <div id="progressbar" class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
@@ -102,13 +102,13 @@
             </div>
             <div class="col-md-6">
                 <ul class="list-group">
-                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('file:///home/smarttv/Apps/player/videos/video_with_border.mp4')">video_with_border</a></li>
-                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://msk1.cdp.look1.ru/video/24110dc3-7c54-43b3-a114-6c6fe6bdeab2.mp4')">bunny border</a></li>
-                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://cdp.look1.ru/trailer/e9350309-194b-4e0d-b967-ccd4647baeb4.mp4')">стражи галактики</a></li>
-                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://msk1.cdp.look1.ru/video/a9122ea2-8fb6-44fa-bc87-e33df2dc230d.mp4')">cdp sintel</a></li>
-                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://cdp.look1.ru/video/54a61799-122b-4101-97f3-a3f962aa9e21.wvm')">look1 widewine</a></li>
-                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://yt-dash-mse-test.commondatastorage.googleapis.com/media/car-20120827-manifest.mpd')">mpd sample</a></li>
-                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://cdp.look1.ru/video/37bdaa51-808f-4d51-8eb0-87cf45713ea9/37bdaa51-808f-4d51-8eb0-87cf45713ea9.mpd')">sintel dash</a></li>
+                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('file:///home/smarttv/Apps/player/videos/video_with_border.mp4')">video_with_border</a> (local)</li>
+                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://msk1.cdp.look1.ru/video/24110dc3-7c54-43b3-a114-6c6fe6bdeab2.mp4')">bunny border</a> (cdp)</li>
+                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://cdp.look1.ru/trailer/e9350309-194b-4e0d-b967-ccd4647baeb4.mp4')">стражи галактики</a> (cdp)</li>
+                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://msk1.cdp.look1.ru/video/a9122ea2-8fb6-44fa-bc87-e33df2dc230d.mp4')">cdp sintel</a> (cdp)</li>
+                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://cdp.look1.ru/video/54a61799-122b-4101-97f3-a3f962aa9e21.wvm')">look1 widewine</a> (cdp)</li>
+                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://yt-dash-mse-test.commondatastorage.googleapis.com/media/car-20120827-manifest.mpd')">google sample</a> (over)</li>
+                    <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://cdp.look1.ru/video/37bdaa51-808f-4d51-8eb0-87cf45713ea9/37bdaa51-808f-4d51-8eb0-87cf45713ea9.mpd')">sintel dash</a> (cdp)</li>
                 </ul>
             </div>
             <div class="col-md-12">
@@ -149,18 +149,15 @@
 
     <script>
         function fullScreen(){
-            var plugin = videoPlayer.player.plugin;
-            plugin.style.position = 'fixed';
-            videoPlayer.setScreenSize(1280, 720);
+            videoPlayer.fullScreen();
         }
 
         function smallScreen() {
-            var plugin = videoPlayer.player.plugin;
-            plugin.style.position = 'relative';
-            videoPlayer.setScreenSize(470, 280);
+            videoPlayer.fullScreen(false);
         }
     </script>
 
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script type="text/javascript" src="js/console.js"></script>
     <script type="text/javascript" src="js/player.js"></script>

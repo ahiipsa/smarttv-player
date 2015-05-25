@@ -76,11 +76,11 @@
     VideoPlayer.prototype.playerFactory = function (type, options) {
         var player;
         switch (type){
-            case 'samsung-plugin':
-                player = new PlayerPlugin(options);
+            case 'samsung':
+                player = new PlayerSamsungPlugin(options);
                 break;
-            case 'samsung-plugin-sef':
-                player = new PlayerSEF(options);
+            case 'samsung-sef':
+                player = new PlayerSamsungSef(options);
                 break;
             default :
                 throw new Error('player ' + type + ' is not declared');
@@ -230,6 +230,12 @@
     };
 
 
+    VideoPlayer.prototype.fullScreen = function(boolean){
+        if(typeof boolean === 'undefined'){ boolean = true };
+        return this.player.fullScreen(boolean);
+    };
+
+
     VideoPlayer.prototype.on = function (event, callback) {
         this.player.on(event, callback);
     };
@@ -247,17 +253,30 @@
 
 
     extend(PlayerInterface, Observer);
+
+
     /**
+     * Player Interface
      * @interface
      */
     function PlayerInterface (options) {
         this.state = NOT_INIT;
         this.currentTime = 0;
         this.duration = 0;
-        this.options = merge({}, options);
+        this.options = merge({
+            bufferSize: (400 * 1024),
+            drm: {
+                heartbeatPeriod: 30
+            }
+        }, options);
     }
 
 
+    /**
+     * Set video url
+     * @param url
+     * @param options
+     */
     PlayerInterface.prototype.setVideo = function (url, options) {
         this.options.url = url;
         this.options = merge(this.options, options);
@@ -266,18 +285,36 @@
     };
 
 
+    /**
+     * Setup options
+     * @param options
+     */
     PlayerInterface.prototype.setOptions = function (options) {
         this.options = merge(this.options, options);
     };
 
 
+    /**
+     * Setup option value by name
+     * @param name
+     * @param value
+     */
+    PlayerInterface.prototype.setOption = function (name, value) {
+        this.options[name] = value;
+    }
+
+
+    /**
+     * Return video player code state
+     * @returns {number}
+     */
     PlayerInterface.prototype.getState = function () {
         return this.state;
     };
 
 
     /**
-     * change status
+     * Change status
      * @param {number} stateCode
      * @returns {PlayerInterface}
      */
@@ -356,16 +393,44 @@
 
 
     /* ******************************* */
-    extend(PlayerSEF, PlayerInterface);
+    extend(PlayerSamsungSef, PlayerInterface);
 
 
-    function PlayerSEF (options) {
-        PlayerSEF.superclass.constructor.apply(this, arguments);
-        log('player sef create');
+    function PlayerSamsungSef (options) {
+        PlayerSamsungSef.superclass.constructor.apply(this, arguments);
+        log('player samsung sef create');
     }
 
 
-    PlayerSEF.prototype.getPluginObject = function () {
+    /**
+     * Return video player DOM container
+     * return container
+     */
+    PlayerSamsungSef.prototype.getContainer = function () {
+        if(!this.options.containerId){
+            throw new Error('containerId undefined');
+        }
+
+        if(!this.container){
+            this.container = document.getElementById(this.options.containerId);
+        }
+
+        if(!this.container){
+            throw new Error('element by containerId (' + this.options.containerId + ') not found');
+        }
+
+        this.container.style.width = this.options.width + 'px';
+        this.container.style.height = this.options.height + 'px';
+
+        return this.container;
+    };
+
+
+    /**
+     * Initialize and return samsung video plugin
+     * @returns {HTMLElement}
+     */
+    PlayerSamsungSef.prototype.getPluginObject = function () {
         if(!this.plugin){
             var plugin = document.createElement('object');
             plugin.setAttribute('id', 'pluginSEF');
@@ -374,7 +439,7 @@
             plugin.setAttribute('classid', 'clsid:SAMSUNG-INFOLINK-SEF');
             plugin.style.position = 'relative';
 
-            document.getElementById('playerContainer').appendChild(plugin);
+            this.container.appendChild(plugin);
             this.plugin = plugin;
         }
 
@@ -390,13 +455,22 @@
      * Execute player api function
      * @returns {boolean}
      */
-    PlayerSEF.prototype.execute = function () {
+    PlayerSamsungSef.prototype.execute = function () {
+        if(typeof this.plugin.Execute === 'undefined'){
+            throw new Error('Plugin have no method Execute');
+
+        }
+
         return this.plugin.Execute.apply( this.plugin, arguments );
     };
 
 
-    PlayerSEF.prototype.init = function () {
-        // TODO: find element object with classid="clsid:SAMSUNG-INFOLINK-SEF"
+    /**
+     * Initialize video player
+     * @returns void
+     */
+    PlayerSamsungSef.prototype.init = function () {
+        this.container = this.getContainer();
         this.plugin = this.getPluginObject();
         var self = this;
 
@@ -422,21 +496,19 @@
         this.plugin.OnCustomEvent           = createHandler('onCustomEvent');
         this.plugin.OnEvent                 = createHandler('onEvent');
 
-        var BUFFER_SIZE = 400 * 1024;
-
         var params = {
             'trid': '23520697',
             'DEVICE_ID': this.options.duid,
             'DEVICE_TYPE_ID': '', // 60
             'STREAM_ID': this.options.streamId,
             'IP_ADDR': this.options.ip,
-            'DRM_URL': 'https://drm.look1.ru/lic',
-            'HEARTBEAT_URL': 'https://drm.look1.ru/hb',
-            'HEARTBEAT_PERIOD': '30',
+            'DRM_URL': this.options.drm.url,
+            'HEARTBEAT_URL': this.options.drm.heartbeatUrl,
+            'HEARTBEAT_PERIOD': this.options.drm.heartbeatPeriod,
             'I_SEEK': 'TIME',
             'CUR_TIME': 'PTS',
             'COMPONENT': 'WV',
-            'PORTAL': 'moreruswv',
+            'PORTAL': this.options.drm.portal,
             'USER_DATA': this.options.userData
         };
 
@@ -466,6 +538,7 @@
             this.options.url = this.options.url +  '?' + queryString;
         }
 
+        // if DASH
         if(this.options.url.slice(-4) === '.mpd'){
             this.options.url = this.options.url + '|COMPONENT=HAS'
         }
@@ -478,18 +551,17 @@
         this.execute('InitPlayer', this.options.url);
         this.execute('SetPlayerProperty', 3, document.cookie, document.cookie.length);
         // this.execute('SetPlayerProperty', 4, 'https://drm.look1.ru/lic', 'https://drm.look1.ru/lic'.length);
-        this.execute('SetInitialBuffer', BUFFER_SIZE);
-        this.execute('SetTotalBufferSize', BUFFER_SIZE * 5);
-        this.execute('SetPendingBuffer', BUFFER_SIZE * 5);
+        this.execute('SetInitialBuffer', this.options.bufferSize);
+        this.execute('SetTotalBufferSize', this.options.bufferSize * 5);
+        this.execute('SetPendingBuffer', this.options.bufferSize * 5);
         this.setScreenSize(this.plugin.offsetWidth, this.plugin.offsetHeight);
         // this.execute('StartPlayback');
-
 
         this.state = INIT;
     };
 
 
-    PlayerSEF.prototype.deinit = function(){
+    PlayerSamsungSef.prototype.deinit = function(){
         log('deinit');
         var result = this.execute('Stop');
         this._setState(NOT_INIT);
@@ -502,10 +574,7 @@
      * @param {number} width
      * @param {number} height
      */
-    PlayerSEF.prototype.setScreenSize = function(width, height){
-
-        var container = this.plugin;
-        var clientRect = container.getBoundingClientRect();
+    PlayerSamsungSef.prototype.setScreenSize = function(width, height){
         this.plugin.style.left = '0px';
         this.plugin.style.top = '0px';
         this.plugin.style.width = width + 'px';
@@ -518,11 +587,32 @@
         width = width * scaleRatio;
         height = height * scaleRatio;
 
-        var left = clientRect.left * scaleRatio;
-        var top = clientRect.top * scaleRatio;
+        var pluginRect = this.plugin.getBoundingClientRect();
+        var left = pluginRect.left * scaleRatio;
+        var top = pluginRect.top * scaleRatio;
 
         this.execute('SetDisplayArea', left, top, width, height);
         this.execute('ClearScreen');
+    };
+
+
+    /**
+     * Switch on full screen mode
+     * @returns {object} PlayerSamsungSef
+     */
+    PlayerSamsungSef.prototype.fullScreen = function (boolean) {
+        if(typeof boolean === 'undefined'){ boolean = true };
+
+        if(boolean){
+            this.plugin.style.position = 'fixed';
+            var displaySize = getDisplaySize();
+            this.setScreenSize(displaySize[0], displaySize[1]);
+        } else {
+            this.plugin.style.position = 'relative';
+            this.setScreenSize(this.options.width, this.options.height);
+        }
+
+        return this;
     };
 
 
@@ -531,7 +621,7 @@
      * @param {number} seconds
      * @returns {boolean}
      */
-    PlayerSEF.prototype.startPlayback = function (seconds) {
+    PlayerSamsungSef.prototype.startPlayback = function (seconds) {
         if (typeof seconds === 'undefined') {
             seconds = 0;
         }
@@ -547,7 +637,7 @@
      * @param {number} timestamp
      * @returns {boolean}
      */
-    PlayerSEF.prototype.setCurrentTime = function (timestamp) {
+    PlayerSamsungSef.prototype.setCurrentTime = function (timestamp) {
         var currentTime = this.getCurrentTime();
         var jump = 0;
 
@@ -565,9 +655,9 @@
 
     /**
      * Paused video
-     * @returns {boolean} result
+     * @returns {boolean}
      */
-    PlayerSEF.prototype.pause = function () {
+    PlayerSamsungSef.prototype.pause = function () {
         var result = this.execute('Pause');
         this._setState(PAUSE);
         return result;
@@ -578,24 +668,24 @@
      * Resume playback
      * @returns {boolean}
      */
-    PlayerSEF.prototype.resume = function () {
+    PlayerSamsungSef.prototype.resume = function () {
         var result = this.execute('Resume');
         this._setState(PLAY);
         return result;
     };
 
 
-    PlayerSEF.prototype.stepBackward = function (sec) {
+    PlayerSamsungSef.prototype.stepBackward = function (sec) {
         return this.execute('JumpBackward', sec);
     };
 
 
-    PlayerSEF.prototype.stepForward = function (sec) {
+    PlayerSamsungSef.prototype.stepForward = function (sec) {
         return this.execute('JumpForward', sec);
     };
 
 
-    PlayerSEF.prototype.stop = function () {
+    PlayerSamsungSef.prototype.stop = function () {
         var result = this.execute('Stop');
         this._setState(STOP);
         this.deinit();
@@ -604,12 +694,12 @@
     };
 
 
-    PlayerSEF.prototype.setPlaybackSpeed = function (speed) {
+    PlayerSamsungSef.prototype.setPlaybackSpeed = function (speed) {
         return this.execute('SetPlaybackSpeed', speed);
     };
 
 
-    PlayerSEF.prototype.onCustomEvent = function () {
+    PlayerSamsungSef.prototype.onCustomEvent = function () {
         log('onCustomEvent');
         log(arguments);
 
@@ -621,7 +711,7 @@
     };
 
 
-    PlayerSEF.prototype.onEvent = function (event, arg1, arg2) {
+    PlayerSamsungSef.prototype.onEvent = function (event, arg1, arg2) {
         // http://www.samsungdforum.com/SamsungDForum/ForumView/f0cd8ea6961d50c3?forumID=ec9f3562a5ebd82a
         /*
          '1' : 'CONNECTION_FAILED',
@@ -697,7 +787,7 @@
      * APIs such as GetDuration(), GetVideoWidth(), and GetVideoHeight() are have to be used
      * after widget get OnStreamInfoReady event.
      */
-    PlayerSEF.prototype.onStreamInfoReady = function () {
+    PlayerSamsungSef.prototype.onStreamInfoReady = function () {
         log( 'onStreamInfoReady' );
         // duration = Math.round(duration / 1000);
         // this.setDuration( duration );
@@ -710,7 +800,7 @@
     };
 
 
-    PlayerSEF.prototype.getInfo = function () {
+    PlayerSamsungSef.prototype.getInfo = function () {
 
         log('GET INFO');
         var info = {
@@ -749,7 +839,7 @@
      * @param {number} speed
      * @return {boolean}
      */
-    PlayerSEF.prototype.setPlaybackSpeed = function (speed) {
+    PlayerSamsungSef.prototype.setPlaybackSpeed = function (speed) {
         return this.execute('SetPlaybackSpeed', speed);
     };
 
@@ -758,7 +848,7 @@
      * SetInitialTimeOut sets the maximum time out value for initial buffering before starting playback.
      * @param {number} seconds
      */
-    PlayerSEF.prototype.setInitialTimeOut = function (seconds) {
+    PlayerSamsungSef.prototype.setInitialTimeOut = function (seconds) {
         return this.execute('SetInitialTimeOut', seconds);
     };
 
@@ -767,7 +857,7 @@
      * OnConnectionFailed event is different from OnNetworkDisconnected. This event is sent only when
      * media player fails to connect to server at the begining or at the jump in HTTP and HTTPS streaming.
      */
-    PlayerSEF.prototype.onConnectionFailed = function() {
+    PlayerSamsungSef.prototype.onConnectionFailed = function() {
         log('onConnectionFailed');
         this._setState(ERROR);
     };
@@ -777,7 +867,7 @@
      * The OnAuthenticationFailed event is sent by media player when it fails to play
      * because authentication process has been failed.
      */
-    PlayerSEF.prototype.onAuthenticationFailed = function() {
+    PlayerSamsungSef.prototype.onAuthenticationFailed = function() {
         log('onAuthenticationFailed');
     };
 
@@ -786,7 +876,7 @@
      * OnStreamNotFound event is sent by meida player when it fails to play because streaming server replys
      * that the stream specified by url parameter of Play() API is not exist.
      */
-    PlayerSEF.prototype.onStreamNotFound = function() {
+    PlayerSamsungSef.prototype.onStreamNotFound = function() {
         log('onStreamNotFound');
     };
 
@@ -795,7 +885,7 @@
      * Receiving OnNetworkDisconnected event means media player already succeed to connect to streaming server.
      * Usually this event means network is disconnected during the streaming.
      */
-    PlayerSEF.prototype.onNetworkDisconnected = function() {
+    PlayerSamsungSef.prototype.onNetworkDisconnected = function() {
         log('onNetworkDisconnected');
     };
 
@@ -811,7 +901,7 @@
      *
      * @param {number} number
      */
-    PlayerSEF.prototype.onRenderError = function(error) {
+    PlayerSamsungSef.prototype.onRenderError = function(error) {
         log('onRenderError');
         error = parseInt(error, 10);
 
@@ -839,14 +929,14 @@
     };
 
 
-    PlayerSEF.prototype.onRenderingStart = function() {
+    PlayerSamsungSef.prototype.onRenderingStart = function() {
         log('onRenderingStart');
     };
 
     /**
      * The OnRenderingComplete event is sent by media player when it reaches to the end of stream.
      */
-    PlayerSEF.prototype.onRenderingComplete = function() {
+    PlayerSamsungSef.prototype.onRenderingComplete = function() {
         log('onRenderingComplete');
         this.stop();
     };
@@ -855,7 +945,7 @@
     /**
      * OnBufferingStart event is sent by media player when it goes on buffering status.
      */
-    PlayerSEF.prototype.onBufferingStart = function() {
+    PlayerSamsungSef.prototype.onBufferingStart = function() {
         log('onBufferingStart');
     };
 
@@ -863,7 +953,7 @@
     /**
      * The OnBufferingComplete event is sent by media player when it gets out of buffering status.
      */
-    PlayerSEF.prototype.onBufferingComplete = function() {
+    PlayerSamsungSef.prototype.onBufferingComplete = function() {
         log('onBufferingComplete');
     };
 
@@ -873,7 +963,7 @@
      * it has to receive more to get out from buffering status.
      * @param {number} percent
      */
-    PlayerSEF.prototype.onBufferingProgress = function(percent) {
+    PlayerSamsungSef.prototype.onBufferingProgress = function(percent) {
         log('onBufferingProgress', 'percent', percent);
     };
 
@@ -882,32 +972,32 @@
      * OnCurrentPlayTime is sent by media player to notify current playback time.
      * @param {number} msec
      */
-    PlayerSEF.prototype.onCurrentPlayTime = function(msec) {
+    PlayerSamsungSef.prototype.onCurrentPlayTime = function(msec) {
         this.currentTime = Math.floor( msec / 1000 );
 
         if(this.currentTime < 0){
             this.currentTime = 0;
         }
 
-        var percent = this.currentTime / (this.getDuration() / 100);
+        //var percent = this.currentTime / (this.getDuration() / 100);
         this.emit('currentTime', this.currentTime);
     };
 
 
-    PlayerSEF.prototype.onResolutionChanged = function () {
+    PlayerSamsungSef.prototype.onResolutionChanged = function () {
         log('onResolutionChanged');
     };
 
 
-    extend(PlayerPlugin, PlayerSEF);
+    extend(PlayerSamsungPlugin, PlayerSamsungSef);
 
-    function PlayerPlugin (options) {
-        PlayerSEF.superclass.constructor.apply(this, arguments);
+    function PlayerSamsungPlugin (options) {
+        PlayerSamsungSef.superclass.constructor.apply(this, arguments);
         log('player plugin create');
     };
 
 
-    PlayerPlugin.prototype.getPluginObject = function () {
+    PlayerSamsungPlugin.prototype.getPluginObject = function () {
         if(!this.plugin){
             var plugin = document.createElement('object');
             plugin.setAttribute('id', 'pluginPlayer');
@@ -928,7 +1018,7 @@
     };
 
 
-    PlayerPlugin.prototype.execute = function () {
+    PlayerSamsungPlugin.prototype.execute = function () {
         var method = Array.prototype.slice.call( arguments, 0, 1 );
         var args = Array.prototype.slice.call( arguments, 1);
 
