@@ -15,20 +15,20 @@
         return obj3;
     }
 
-    var ERROR   = -1,
-        NOT_INIT= 0,
-        INIT    = 1,
-        STOP    = 2,
-        PLAY    = 3,
-        PAUSE   = 4;
+    var STATE_ERROR   = -1,
+        STATE_NOT_INIT= 0,
+        STATE_INIT    = 1,
+        STATE_STOP    = 2,
+        STATE_PLAY    = 3,
+        STATE_PAUSE   = 4;
 
     var states = {};
-    states[ERROR]   = 'error';
-    states[NOT_INIT]= 'not_init';
-    states[INIT]    = 'init';
-    states[STOP]    = 'stop';
-    states[PLAY]    = 'play';
-    states[PAUSE]   = 'pause';
+    states[STATE_ERROR]   = 'error';
+    states[STATE_NOT_INIT]= 'not_init';
+    states[STATE_INIT]    = 'init';
+    states[STATE_STOP]    = 'stop';
+    states[STATE_PLAY]    = 'play';
+    states[STATE_PAUSE]   = 'pause';
 
 
     function Observer() {}
@@ -125,36 +125,36 @@
 
         log('play', 'state', states[state], state);
         switch(state){
-            case ERROR:
-            case NOT_INIT:
+            case STATE_ERROR:
+            case STATE_NOT_INIT:
                 this.player.init();
                 result = this.startPlayback(seconds);
                 if(result){
-                    this.player._setState(PLAY);
+                    this.player._setState(STATE_PLAY);
                 }
                 break;
-            case INIT:
+            case STATE_INIT:
                 result = this.startPlayback(seconds);
                 if(result){
-                    this.player._setState(PLAY);
+                    this.player._setState(STATE_PLAY);
                 }
                 break;
-            case STOP:
+            case STATE_STOP:
                 result = this.startPlayback(seconds);
                 if(result){
-                    this.player._setState(PLAY);
+                    this.player._setState(STATE_PLAY);
                 }
                 break;
-            case PAUSE:
+            case STATE_PAUSE:
                 result = this.resume();
                 if(result){
-                    this.player._setState(PLAY);
+                    this.player._setState(STATE_PLAY);
                 }
                 break;
-            case PLAY:
+            case STATE_PLAY:
                 result = this.pause();
                 if(result){
-                    this.player._setState(PAUSE);
+                    this.player._setState(STATE_PAUSE);
                 }
                 break;
             default:
@@ -266,7 +266,7 @@
      * @interface
      */
     function PlayerInterface (options) {
-        this.state = NOT_INIT;
+        this.state = STATE_NOT_INIT;
         this.currentTime = 0;
         this.duration = 0;
         this.options = merge({
@@ -279,6 +279,7 @@
 
     /**
      * Initialize player
+     * @abstract
      */
     PlayerInterface.prototype.init = function () {
         throw new Error('init not implemented');
@@ -287,6 +288,7 @@
 
     /**
      * Deinitialize player
+     * @abstract
      */
     PlayerInterface.prototype.deinit = function () {
         throw new Error('deinit not implemented');
@@ -295,7 +297,8 @@
 
     /**
      * Init and return video player DOM container
-     * return container
+     * @abstract
+     * @returns {HTMLElement}
      */
     PlayerInterface.prototype.getContainer = function () {
         if(!this.options.containerId){
@@ -314,6 +317,16 @@
         this.container.style.height = this.getOption('height') + 'px';
 
         return this.container;
+    };
+
+
+    /**
+     * Init and retirn video player plugin
+     * @abstract
+     * @return {HTMLElement}
+     */
+    PlayerInterface.prototype.getPluginObject = function () {
+        throw new Error('init not implemented');
     };
 
 
@@ -371,7 +384,7 @@
 
 
     /**
-     * Change status
+     * Change state
      * @param {number} stateCode
      * @returns {PlayerInterface}
      */
@@ -386,65 +399,101 @@
     };
 
 
+    /**
+     * @abstract
+     * @return {number}
+     */
     PlayerInterface.prototype.getCurrentTime = function () {
         throw new Error('getCurrentTime not implemented');
     };
 
-
+    /**
+     * @abstract
+     * @return {number}
+     */
     PlayerInterface.prototype.getDuration = function () {
         throw new Error('getDuration not implemented');
     };
 
 
-    PlayerInterface.prototype.setDuration = function (sec) {
-        this.duration = sec;
-    };
-
-
+    /**
+     * @abstract
+     */
     PlayerInterface.prototype.pause = function () {
         throw new Error('pause not implemented');
     };
 
 
+    /**
+     * @abstract
+     */
     PlayerInterface.prototype.stop = function () {
         throw new Error('stop not implemented');
     };
 
 
+    /**
+     * @abstract
+     * @param {number} sec
+     */
     PlayerInterface.prototype.stepForward = function(sec) {
         throw new Error('stepForward not implemented');
     };
 
+
+    /**
+     * @abstract
+     * @param {number} sec
+     */
     PlayerInterface.prototype.stepBackward = function(sec) {
         throw new Error('stepBackward not implemented');
     };
 
 
+    /**
+     * @abstract
+     * @param {number} sec
+     */
     PlayerInterface.prototype.setCurrentTime = function(sec){
         throw new Error('setCurrentTime not implemented');
     };
 
 
+    /**
+     * @abstract
+     */
     PlayerInterface.prototype.play = function () {
         throw new Error('play not implemented');
     };
 
 
+    /**
+     * @abstract
+     */
     PlayerInterface.prototype.startPlayback = function () {
         throw new Error('startPlayback not implemented');
     };
 
 
+    /**
+     * @abstract
+     */
     PlayerInterface.prototype.setScreenSize = function () {
         throw new Error('setScreenSize not implemented');
     };
 
 
+    /**
+     * @abstract
+     */
     PlayerInterface.prototype.reuestFullscreen = function () {
         throw new Error('setScreenSize not implemented');
     };
 
 
+    /**
+     * @abstract
+     */
     PlayerInterface.prototype.exitFullscreen = function () {
         throw new Error('exitFullscreen not implemented');
     };
@@ -472,6 +521,9 @@
     };
 
 
+    /**
+     * @abstract
+     */
     PlayerInterface.prototype.getInfo = function () {
         throw new Error('getInfo not implemented');
     };
@@ -618,14 +670,14 @@
         this.setScreenSize(this.plugin.offsetWidth, this.plugin.offsetHeight);
         // this.execute('StartPlayback');
 
-        this._setState(INIT);
+        this._setState(STATE_INIT);
     };
 
 
     PlayerSamsungSef.prototype.deinit = function(){
         log('deinit');
         var result = this.execute('Stop');
-        this._setState(NOT_INIT);
+        this._setState(STATE_NOT_INIT);
         return result;
     };
 
@@ -636,19 +688,20 @@
      * @param {number} height
      */
     PlayerSamsungSef.prototype.setScreenSize = function(width, height){
-        this.plugin.style.left = '0px';
-        this.plugin.style.top = '0px';
-        this.plugin.style.width = width + 'px';
-        this.plugin.style.height = height + 'px';
-        this.plugin.style.overflow = 'hidden';
+        var plugin = this.getPluginObject();
+        plugin.style.left = '0px';
+        plugin.style.top = '0px';
+        plugin.style.width = width + 'px';
+        plugin.style.height = height + 'px';
+        plugin.style.overflow = 'hidden';
 
-        var size = getDisplaySize();
-        var scaleRatio = 960 / size[0];
+        var deviceScreenSize = this.getDeviceScreenSize();
+        var scaleRatio = 960 / deviceScreenSize[0];
 
         width = width * scaleRatio;
         height = height * scaleRatio;
 
-        var pluginRect = this.plugin.getBoundingClientRect();
+        var pluginRect = plugin.getBoundingClientRect();
         var left = pluginRect.left * scaleRatio;
         var top = pluginRect.top * scaleRatio;
 
@@ -663,8 +716,8 @@
      */
     PlayerSamsungSef.prototype.requestFullscreen = function () {
         this.plugin.style.position = 'fixed';
-        var displaySize = getDisplaySize();
-        this.setScreenSize(displaySize[0], displaySize[1]);
+        var deviceScreenSize = this.getDeviceScreenSize();
+        this.setScreenSize(deviceScreenSize[0], deviceScreenSize[1]);
         return true;
     };
 
@@ -691,7 +744,7 @@
         }
 
         var result = this.execute('StartPlayback', seconds);
-        this._setState(PLAY);
+        this._setState(STATE_PLAY);
         return result;
     };
 
@@ -723,7 +776,7 @@
      */
     PlayerSamsungSef.prototype.pause = function () {
         var result = this.execute('Pause');
-        this._setState(PAUSE);
+        this._setState(STATE_PAUSE);
         return result;
     };
 
@@ -734,7 +787,7 @@
      */
     PlayerSamsungSef.prototype.resume = function () {
         var result = this.execute('Resume');
-        this._setState(PLAY);
+        this._setState(STATE_PLAY);
         return result;
     };
 
@@ -751,7 +804,7 @@
 
     PlayerSamsungSef.prototype.stop = function () {
         var result = this.execute('Stop');
-        this._setState(STOP);
+        this._setState(STATE_STOP);
         this.deinit();
         this.emit('stop');
         return result;
@@ -889,7 +942,7 @@
         }
 
         var videoRatio = info.width / info.height;
-        var size = getDisplaySize();
+        var size = this.getDeviceScreenSize();
 
         log('videoRatio', videoRatio);
         log('scaleRatio', 960 / size[0]);
@@ -923,7 +976,7 @@
      */
     PlayerSamsungSef.prototype.onConnectionFailed = function() {
         log('onConnectionFailed');
-        this._setState(ERROR);
+        this._setState(STATE_ERROR);
     };
 
 
@@ -1166,7 +1219,7 @@
 
 
         this._setSource(this.options.url);
-        this._setState(INIT);
+        this._setState(STATE_INIT);
     };
 
 
@@ -1174,7 +1227,7 @@
         var container = this.getContainer();
         container.removeChild(this.getPluginObject());
         this.plugin = null;
-        this._setState(NOT_INIT);
+        this._setState(STATE_NOT_INIT);
         return true;
     };
 
@@ -1189,28 +1242,28 @@
     PlayerHtml5.prototype.startPlayback = function () {
         this.plugin.load();
         this.plugin.play();
-        this._setState(PLAY);
+        this._setState(STATE_PLAY);
         return true;
     };
 
 
     PlayerHtml5.prototype.play = function () {
         this.plugin.play();
-        this._setState(PLAY);
+        this._setState(STATE_PLAY);
         return true;
     };
 
 
     PlayerHtml5.prototype.pause = function () {
         this.plugin.pause();
-        this._setState(PAUSE);
+        this._setState(STATE_PAUSE);
         return true;
     };
 
 
     PlayerHtml5.prototype.resume = function () {
         this.plugin.play();
-        this._setState(PLAY);
+        this._setState(STATE_PLAY);
         return true;
     };
 
@@ -1218,7 +1271,7 @@
     PlayerHtml5.prototype.stop = function () {
         this.plugin.pause();
         this.plugin.currentTime = 0;
-        this._setState(STOP);
+        this._setState(STATE_STOP);
         return true;
     };
 
