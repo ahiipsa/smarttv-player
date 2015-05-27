@@ -569,12 +569,13 @@
      * @returns {boolean}
      */
     PlayerSamsungSef.prototype.execute = function () {
-        if(typeof this.plugin.Execute === 'undefined'){
+        var plugin = this.getPlugin();
+        if(typeof plugin.Execute === 'undefined'){
             throw new Error('Plugin have no method Execute');
 
         }
 
-        return this.plugin.Execute.apply( this.plugin, arguments );
+        return plugin.Execute.apply( plugin, arguments );
     };
 
 
@@ -584,7 +585,7 @@
      */
     PlayerSamsungSef.prototype.init = function () {
         this.container = this.getContainer();
-        this.plugin = this.getPlugin();
+        var plugin = this.getPlugin();
         var self = this;
 
         var createHandler = function (fnName) {
@@ -593,36 +594,36 @@
             };
         };
 
-        this.plugin.OnConnectionFailed      = createHandler('onConnectionFailed');
-        this.plugin.OnAuthenticationFailed  = createHandler('onAuthenticationFailed');
-        this.plugin.OnStreamNotFound        = createHandler('onStreamNotFound');
-        this.plugin.OnNetworkDisconnected   = createHandler('onNetworkDisconnected');
-        this.plugin.OnRenderingStart        = createHandler('onRenderingStart');
-        this.plugin.OnRenderError           = createHandler('onRenderError');
-        this.plugin.OnRenderingComplete     = createHandler('onRenderingComplete');
-        this.plugin.OnStreamInfoReady       = createHandler('onStreamInfoReady');
-        this.plugin.OnBufferingStart        = createHandler('onBufferingStart');
-        this.plugin.OnBufferingComplete     = createHandler('onBufferingComplete');
-        this.plugin.OnBufferingProgress     = createHandler('onBufferingProgress');
-        this.plugin.OnCurrentPlayTime       = createHandler('onCurrentPlayTime');
-        this.plugin.OnResolutionChanged     = createHandler('onResolutionChanged');
-        this.plugin.OnCustomEvent           = createHandler('onCustomEvent');
-        this.plugin.OnEvent                 = createHandler('onEvent');
+        plugin.OnConnectionFailed      = createHandler('onConnectionFailed');
+        plugin.OnAuthenticationFailed  = createHandler('onAuthenticationFailed');
+        plugin.OnStreamNotFound        = createHandler('onStreamNotFound');
+        plugin.OnNetworkDisconnected   = createHandler('onNetworkDisconnected');
+        plugin.OnRenderingStart        = createHandler('onRenderingStart');
+        plugin.OnRenderError           = createHandler('onRenderError');
+        plugin.OnRenderingComplete     = createHandler('onRenderingComplete');
+        plugin.OnStreamInfoReady       = createHandler('onStreamInfoReady');
+        plugin.OnBufferingStart        = createHandler('onBufferingStart');
+        plugin.OnBufferingComplete     = createHandler('onBufferingComplete');
+        plugin.OnBufferingProgress     = createHandler('onBufferingProgress');
+        plugin.OnCurrentPlayTime       = createHandler('onCurrentPlayTime');
+        plugin.OnResolutionChanged     = createHandler('onResolutionChanged');
+        plugin.OnCustomEvent           = createHandler('onCustomEvent');
+        plugin.OnEvent                 = createHandler('onEvent');
 
         var params = {
             'trid': '23520697',
-            'DEVICE_ID': this.options.duid,
+            'DEVICE_ID': this.getOption('duid'),
             'DEVICE_TYPE_ID': '', // 60
-            'STREAM_ID': this.options.streamId,
-            'IP_ADDR': this.options.ip,
-            'DRM_URL': this.options.drm.url,
-            'HEARTBEAT_URL': this.options.drm.heartbeatUrl,
-            'HEARTBEAT_PERIOD': this.options.drm.heartbeatPeriod,
+            'STREAM_ID': this.getOption('streamId'),
+            'IP_ADDR': this.getOption('ip'),
+            'DRM_URL': this.getOption('drm').url,
+            'HEARTBEAT_URL': this.getOption('drm').heartbeatUrl,
+            'HEARTBEAT_PERIOD': this.getOption('drm').heartbeatPeriod,
             'I_SEEK': 'TIME',
             'CUR_TIME': 'PTS',
             'COMPONENT': 'WV',
-            'PORTAL': this.options.drm.portal,
-            'USER_DATA': this.options.userData
+            'PORTAL': this.getOption('drm').portal,
+            'USER_DATA': this.getOption('userData')
         };
 
 
@@ -647,27 +648,27 @@
         }).join('|');
 
         // if DRM
-        if(this.options.url.slice(-4) === '.wvm'){
-            this.options.url = this.options.url +  '?' + queryString;
+        if(this.getOption('url').slice(-4) === '.wvm'){
+            this.setOption('url', (this.getOption('url') +  '?' + queryString));
         }
 
         // if DASH
-        if(this.options.url.slice(-4) === '.mpd'){
-            this.options.url = this.options.url + '|COMPONENT=HAS'
+        if(this.getOption('url').slice(-4) === '.mpd'){
+            this.setOption('url', (this.getOption('url') + '|COMPONENT=HAS'));
         }
 
         // for sef player
-        if(typeof this.plugin.Open === "function"){
-            this.plugin.Open('Player', '1.112', 'Player');
+        if(typeof plugin.Open === "function"){
+            plugin.Open('Player', '1.112', 'Player');
         }
 
-        this.execute('InitPlayer', this.options.url);
+        this.execute('InitPlayer', this.getOption('url'));
         this.execute('SetPlayerProperty', 3, document.cookie, document.cookie.length);
         // this.execute('SetPlayerProperty', 4, 'https://drm.look1.ru/lic', 'https://drm.look1.ru/lic'.length);
-        this.execute('SetInitialBuffer', this.options.bufferSize);
-        this.execute('SetTotalBufferSize', this.options.bufferSize * 5);
-        this.execute('SetPendingBuffer', this.options.bufferSize * 5);
-        this.setScreenSize(this.plugin.offsetWidth, this.plugin.offsetHeight);
+        this.execute('SetInitialBuffer', this.getOption('bufferSize'));
+        this.execute('SetTotalBufferSize', this.getOption('bufferSize') * 5);
+        this.execute('SetPendingBuffer', this.getOption('bufferSize') * 5);
+        this.setScreenSize(plugin.offsetWidth, plugin.offsetHeight);
         // this.execute('StartPlayback');
 
         this._setState(STATE_INIT);
@@ -715,7 +716,7 @@
      * @returns {object} PlayerSamsungSef
      */
     PlayerSamsungSef.prototype.requestFullscreen = function () {
-        this.plugin.style.position = 'fixed';
+        this.getPlugin().style.position = 'fixed';
         var deviceScreenSize = this.getDeviceScreenSize();
         this.setScreenSize(deviceScreenSize[0], deviceScreenSize[1]);
         return true;
@@ -727,7 +728,7 @@
      * @returns {boolean}
      */
     PlayerSamsungSef.prototype.exitFullscreen = function () {
-        this.plugin.style.position = 'relative';
+        this.getPlugin().style.position = 'relative';
         this.setScreenSize(this.options.width, this.options.height);
         return true;
     };
@@ -911,9 +912,9 @@
         // document.getElementById('duration').innerText = duration.toString();
 
         var info = this.getInfo();
+        var plugin = this.getPlugin();
         this.emit('info', info);
-
-        this.setScreenSize(this.plugin.offsetWidth, this.plugin.offsetHeight);
+        this.setScreenSize(plugin.offsetWidth, plugin.offsetHeight);
     };
 
 
@@ -1138,32 +1139,14 @@
     PlayerSamsungPlugin.prototype.execute = function () {
         var method = Array.prototype.slice.call( arguments, 0, 1 );
         var args = Array.prototype.slice.call( arguments, 1);
+        var plugin = this.getPlugin();
 
-        if(typeof this.plugin[ method ] === 'undefined'){
+        if(typeof plugin[ method ] === 'undefined'){
             log('plugin have not method', method);
             return false;
         }
 
-        return this.plugin[ method ].apply( this.plugin, args );
-    };
-
-
-    var getDisplaySize = function() {
-        var w = window,
-            d = document,
-            e = d.documentElement,
-            g = d.getElementsByTagName('body')[0],
-            x = w.innerWidth || e.clientWidth || g.clientWidth,
-            y = w.innerHeight|| e.clientHeight|| g.clientHeight;
-
-        log('window: ' + x + 'x' + y);
-
-        var sh = window.screen.availHeight,
-            sw = window.screen.availWidth;
-
-        log('screen: ' + sw + 'x' + sh);
-
-        return [sw, sh];
+        return plugin[ method ].apply( plugin, args );
     };
 
     extend(PlayerHtml5, PlayerInterface);
@@ -1235,67 +1218,69 @@
     PlayerHtml5.prototype._setSource = function(sourceUrl){
         var source = document.createElement('source');
         source.setAttribute('src', sourceUrl);
-        this.plugin.appendChild(source);
+        this.getPlugin().appendChild(source);
     };
 
 
     PlayerHtml5.prototype.startPlayback = function () {
-        this.plugin.load();
-        this.plugin.play();
+        var plugin = this.getPlugin();
+        plugin.load();
+        plugin.play();
         this._setState(STATE_PLAY);
         return true;
     };
 
 
     PlayerHtml5.prototype.play = function () {
-        this.plugin.play();
+        this.getPlugin().play();
         this._setState(STATE_PLAY);
         return true;
     };
 
 
     PlayerHtml5.prototype.pause = function () {
-        this.plugin.pause();
+        this.getPlugin().pause();
         this._setState(STATE_PAUSE);
         return true;
     };
 
 
     PlayerHtml5.prototype.resume = function () {
-        this.plugin.play();
+        this.getPlugin().play();
         this._setState(STATE_PLAY);
         return true;
     };
 
 
     PlayerHtml5.prototype.stop = function () {
-        this.plugin.pause();
-        this.plugin.currentTime = 0;
+        var plugin = this.getPlugin();
+        plugin.pause();
+        plugin.currentTime = 0;
         this._setState(STATE_STOP);
         return true;
     };
 
 
     PlayerHtml5.prototype.setCurrentTime = function (sec) {
-        this.plugin.currentTime = sec;
+        this.getPlugin().currentTime = sec;
         return true;
     };
 
 
     PlayerHtml5.prototype.stepForward = function (sec) {
-        this.plugin.currentTime = this.plugin.currentTime + sec;
+        this.getPlugin().currentTime = this.getPlugin().currentTime + sec;
     };
 
 
     PlayerHtml5.prototype.stepBackward = function (sec) {
-        this.plugin.currentTime = this.plugin.currentTime - sec;
+        this.getPlugin().currentTime = this.getPlugin().currentTime - sec;
     };
 
 
     PlayerHtml5.prototype.setPlaybackSpeed = function (speed) {
         var rate = parseFloat(speed).toFixed(1);
         log('rate', rate);
-        this.plugin.playbackRate = rate;
+        this.getPlugin().playbackRate = rate;
     };
 
 
@@ -1351,7 +1336,8 @@
     PlayerHtml5.prototype.getDuration = function () {
         var duration = this.getPlugin().duration.toFixed(3);
         return duration;
-    }
+    };
+
 
     window.VideoPlayer = VideoPlayer;
 })();
