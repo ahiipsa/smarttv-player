@@ -47,9 +47,11 @@
         log('app start');
         log('location', location.href);
 
-        var playerVideo = new VideoPlayer('samsung', {
+        var playerVideo = new VideoPlayer('html5', {
             url: 'http://cdp.look1.ru/trailer/e9350309-194b-4e0d-b967-ccd4647baeb4.mp4',
             containerId: 'playerContainer',
+            esn: getESN(),
+            duid: getDUID(),
             drm: {
                 url: 'https://drm.look1.ru/lic',
                 heartbeatUrl: 'https://drm.look1.ru/hb',
@@ -67,18 +69,22 @@
 
         var duration = 0;
 
-        playerVideo.on('currentTime', function (seconds) {
-
+        playerVideo.on('timeupdate', function (seconds) {
             document.getElementById('currentTime').innerText = playerVideo.getCurrentTime();
             document.getElementById('progressbar').style.width = (seconds / (duration / 100)) + '%';
+        });
 
+
+        playerVideo.on('durationchange', function (seconds) {
+            duration = seconds;
+            document.getElementById('duration').innerText = seconds;
         });
 
 
         playerVideo.on('info', function (info) {
 
             log('duration', info.duration);
-            info.duration = Math.floor( info.duration / 1000 );
+            info.duration = Math.floor( info.duration );
             duration = info.duration;
             document.getElementById('duration').innerText = info.duration;
 
@@ -92,9 +98,7 @@
             return item.split(':')[1];
         });
 
-        playerVideo.setVideo({
-            esn: getESN(),
-            duid: getDUID(),
+        playerVideo.setVideo(url, {
             streamId: videoOptions[1],
             ip: videoOptions[0],
             userData: encodeURIComponent(videoOptions[3])

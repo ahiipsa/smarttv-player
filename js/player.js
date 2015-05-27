@@ -82,6 +82,9 @@
             case 'samsung-sef':
                 player = new PlayerSamsungSef(options);
                 break;
+            case 'html5':
+                player = new PlayerHtml5(options);
+                break;
             default :
                 throw new Error('player ' + type + ' is not declared');
                 break;
@@ -230,9 +233,13 @@
     };
 
 
-    VideoPlayer.prototype.fullScreen = function(boolean){
-        if(typeof boolean === 'undefined'){ boolean = true };
-        return this.player.fullScreen(boolean);
+    VideoPlayer.prototype.requestFullscreen = function(){
+        return this.player.requestFullscreen();
+    };
+
+
+    VideoPlayer.prototype.exitFullscreen = function(){
+        return this.player.exitFullscreen();
     };
 
 
@@ -249,7 +256,6 @@
     VideoPlayer.prototype.off = function (event, callback) {
         this.player.on(event, callback);
     };
-
 
 
     extend(PlayerInterface, Observer);
@@ -271,15 +277,54 @@
         }, options);
     }
 
+    /**
+     * Initialize player
+     */
+    PlayerInterface.prototype.init = function () {
+        throw new Error('init not implemented');
+    };
+
+
+    /**
+     * Deinitialize player
+     */
+    PlayerInterface.prototype.deinit = function () {
+        throw new Error('deinit not implemented');
+    }
+
+
+    /**
+     * Init and return video player DOM container
+     * return container
+     */
+    PlayerInterface.prototype.getContainer = function () {
+        if(!this.options.containerId){
+            throw new Error('containerId undefined');
+        }
+
+        if(!this.container){
+            this.container = document.getElementById(this.getOption('containerId'));
+        }
+
+        if(!this.container){
+            throw new Error('element by containerId (' + this.getOption('containerId') + ') not found');
+        }
+
+        this.container.style.width = this.getOption('width') + 'px';
+        this.container.style.height = this.getOption('height') + 'px';
+
+        return this.container;
+    };
+
 
     /**
      * Set video url
-     * @param url
-     * @param options
+     * @param {string} url
+     * @param {object} options
      */
     PlayerInterface.prototype.setVideo = function (url, options) {
-        this.options.url = url;
-        this.options = merge(this.options, options);
+        this.setOption('url', url);
+        this.setOptions(options);
         this.deinit();
         this.init();
     };
@@ -287,7 +332,7 @@
 
     /**
      * Setup options
-     * @param options
+     * @param {object} options
      */
     PlayerInterface.prototype.setOptions = function (options) {
         this.options = merge(this.options, options);
@@ -296,12 +341,24 @@
 
     /**
      * Setup option value by name
-     * @param name
-     * @param value
+     * @param {string} name
+     * @param {*} value
+     * @returns {PlayerInterface}
      */
     PlayerInterface.prototype.setOption = function (name, value) {
         this.options[name] = value;
-    }
+        return this;
+    };
+
+
+    /**
+     * Return option value by name
+     * @param {string} name
+     * @returns {*}
+     */
+    PlayerInterface.prototype.getOption = function (name) {
+        return this.options[name];
+    };
 
 
     /**
@@ -330,12 +387,12 @@
 
 
     PlayerInterface.prototype.getCurrentTime = function () {
-        return this.currentTime;
+        throw new Error('getCurrentTime not implemented');
     };
 
 
     PlayerInterface.prototype.getDuration = function () {
-        return this.duration;
+        throw new Error('getDuration not implemented');
     };
 
 
@@ -345,35 +402,55 @@
 
 
     PlayerInterface.prototype.pause = function () {
-        throw new Error('not implemented');
+        throw new Error('pause not implemented');
     };
 
 
     PlayerInterface.prototype.stop = function () {
-        throw new Error('not implemented');
+        throw new Error('stop not implemented');
     };
 
 
     PlayerInterface.prototype.stepForward = function(sec) {
-        throw new Error('not implemented');
+        throw new Error('stepForward not implemented');
     };
 
     PlayerInterface.prototype.stepBackward = function(sec) {
-        throw new Error('not implemented');
+        throw new Error('stepBackward not implemented');
     };
 
 
     PlayerInterface.prototype.setCurrentTime = function(sec){
-        throw new Error('not implemented');
+        throw new Error('setCurrentTime not implemented');
     };
 
 
     PlayerInterface.prototype.play = function () {
-        throw new Error('not implemented');
+        throw new Error('play not implemented');
     };
 
 
-    PlayerInterface.prototype.getScreenSize = function() {
+    PlayerInterface.prototype.startPlayback = function () {
+        throw new Error('startPlayback not implemented');
+    };
+
+
+    PlayerInterface.prototype.setScreenSize = function () {
+        throw new Error('setScreenSize not implemented');
+    };
+
+
+    PlayerInterface.prototype.reuestFullscreen = function () {
+        throw new Error('setScreenSize not implemented');
+    };
+
+
+    PlayerInterface.prototype.exitFullscreen = function () {
+        throw new Error('exitFullscreen not implemented');
+    };
+
+
+    PlayerInterface.prototype.getWindowSize = function () {
         var w = window,
             d = document,
             e = d.documentElement,
@@ -381,14 +458,22 @@
             x = w.innerWidth || e.clientWidth || g.clientWidth,
             y = w.innerHeight|| e.clientHeight|| g.clientHeight;
 
-        log('window: ' + x + 'x' + y);
+        return [x, y];
+    };
 
-        var sh = window.screen.availHeight,
-            sw = window.screen.availWidth;
+
+    PlayerInterface.prototype.getDeviceScreenSize = function() {
+        var sw = window.screen.availWidth,
+            sh = window.screen.availHeight;
 
         log('screen: ' + sw + 'x' + sh);
 
-        return sw;
+        return [sw, sh];
+    };
+
+
+    PlayerInterface.prototype.getInfo = function () {
+        throw new Error('getInfo not implemented');
     };
 
 
@@ -400,30 +485,6 @@
         PlayerSamsungSef.superclass.constructor.apply(this, arguments);
         log('player samsung sef create');
     }
-
-
-    /**
-     * Return video player DOM container
-     * return container
-     */
-    PlayerSamsungSef.prototype.getContainer = function () {
-        if(!this.options.containerId){
-            throw new Error('containerId undefined');
-        }
-
-        if(!this.container){
-            this.container = document.getElementById(this.options.containerId);
-        }
-
-        if(!this.container){
-            throw new Error('element by containerId (' + this.options.containerId + ') not found');
-        }
-
-        this.container.style.width = this.options.width + 'px';
-        this.container.style.height = this.options.height + 'px';
-
-        return this.container;
-    };
 
 
     /**
@@ -439,7 +500,7 @@
             plugin.setAttribute('classid', 'clsid:SAMSUNG-INFOLINK-SEF');
             plugin.style.position = 'relative';
 
-            this.container.appendChild(plugin);
+            this.getContainer().appendChild(plugin);
             this.plugin = plugin;
         }
 
@@ -557,7 +618,7 @@
         this.setScreenSize(this.plugin.offsetWidth, this.plugin.offsetHeight);
         // this.execute('StartPlayback');
 
-        this.state = INIT;
+        this._setState(INIT);
     };
 
 
@@ -597,22 +658,25 @@
 
 
     /**
-     * Switch on full screen mode
+     * Request Fullscreen mode
      * @returns {object} PlayerSamsungSef
      */
-    PlayerSamsungSef.prototype.fullScreen = function (boolean) {
-        if(typeof boolean === 'undefined'){ boolean = true };
+    PlayerSamsungSef.prototype.requestFullscreen = function () {
+        this.plugin.style.position = 'fixed';
+        var displaySize = getDisplaySize();
+        this.setScreenSize(displaySize[0], displaySize[1]);
+        return true;
+    };
 
-        if(boolean){
-            this.plugin.style.position = 'fixed';
-            var displaySize = getDisplaySize();
-            this.setScreenSize(displaySize[0], displaySize[1]);
-        } else {
-            this.plugin.style.position = 'relative';
-            this.setScreenSize(this.options.width, this.options.height);
-        }
 
-        return this;
+    /**
+     * Exit from Fullscreen mode
+     * @returns {boolean}
+     */
+    PlayerSamsungSef.prototype.exitFullscreen = function () {
+        this.plugin.style.position = 'relative';
+        this.setScreenSize(this.options.width, this.options.height);
+        return true;
     };
 
 
@@ -980,7 +1044,7 @@
         }
 
         //var percent = this.currentTime / (this.getDuration() / 100);
-        this.emit('currentTime', this.currentTime);
+        this.emit('timeupdate', this.currentTime);
     };
 
 
@@ -993,7 +1057,7 @@
 
     function PlayerSamsungPlugin (options) {
         PlayerSamsungSef.superclass.constructor.apply(this, arguments);
-        log('player plugin create');
+        log('player samsung plugin create');
     };
 
 
@@ -1030,6 +1094,7 @@
         return this.plugin[ method ].apply( this.plugin, args );
     };
 
+
     var getDisplaySize = function() {
         var w = window,
             d = document,
@@ -1047,6 +1112,193 @@
 
         return [sw, sh];
     };
+
+    extend(PlayerHtml5, PlayerInterface);
+
+    function PlayerHtml5 (options) {
+        PlayerHtml5.superclass.constructor.apply(this, arguments);
+        log('player html5 create');
+    };
+
+
+    /**
+     * Initialize and return video plugin
+     * @returns {HTMLElement}
+     */
+    PlayerHtml5.prototype.getPluginObject = function () {
+        if(!this.plugin){
+            var plugin = document.createElement('video');
+            plugin.setAttribute('id', 'videoPlugin');
+            plugin.setAttribute('class', 'player');
+            plugin.setAttribute('width', this.options.width);
+            plugin.setAttribute('height', this.options.height);
+            plugin.style.position = 'relative';
+
+            this.getContainer().appendChild(plugin);
+            this.plugin = plugin;
+        }
+
+        if(!this.plugin){
+            throw new Error('player not found');
+        }
+
+        return this.plugin;
+    };
+
+
+    PlayerHtml5.prototype.init = function () {
+        log('init');
+        var container = this.getContainer();
+        var plugin = this.getPluginObject();
+        var self = this;
+
+        plugin.addEventListener('timeupdate', function () {
+            self.emit('timeupdate', self.getCurrentTime());
+        });
+
+        plugin.addEventListener('durationchange', function () {
+            self.emit('durationchange', self.getDuration());
+        });
+
+        plugin.addEventListener('play', function () {
+            self.emit('play');
+        });
+
+
+        this._setSource(this.options.url);
+        this._setState(INIT);
+    };
+
+
+    PlayerHtml5.prototype.deinit = function () {
+        var container = this.getContainer();
+        container.removeChild(this.getPluginObject());
+        this.plugin = null;
+        this._setState(NOT_INIT);
+        return true;
+    };
+
+
+    PlayerHtml5.prototype._setSource = function(sourceUrl){
+        var source = document.createElement('source');
+        source.setAttribute('src', sourceUrl);
+        this.plugin.appendChild(source);
+    };
+
+
+    PlayerHtml5.prototype.startPlayback = function () {
+        this.plugin.load();
+        this.plugin.play();
+        this._setState(PLAY);
+        return true;
+    };
+
+
+    PlayerHtml5.prototype.play = function () {
+        this.plugin.play();
+        this._setState(PLAY);
+        return true;
+    };
+
+
+    PlayerHtml5.prototype.pause = function () {
+        this.plugin.pause();
+        this._setState(PAUSE);
+        return true;
+    };
+
+
+    PlayerHtml5.prototype.resume = function () {
+        this.plugin.play();
+        this._setState(PLAY);
+        return true;
+    };
+
+
+    PlayerHtml5.prototype.stop = function () {
+        this.plugin.pause();
+        this.plugin.currentTime = 0;
+        this._setState(STOP);
+        return true;
+    };
+
+
+    PlayerHtml5.prototype.setCurrentTime = function (sec) {
+        this.plugin.currentTime = sec;
+        return true;
+    };
+
+
+    PlayerHtml5.prototype.stepForward = function (sec) {
+        this.plugin.currentTime = this.plugin.currentTime + sec;
+    };
+
+
+    PlayerHtml5.prototype.stepBackward = function (sec) {
+        this.plugin.currentTime = this.plugin.currentTime - sec;
+    };
+
+
+    PlayerHtml5.prototype.setPlaybackSpeed = function (speed) {
+        var rate = parseFloat(speed).toFixed(1);
+        log('rate', rate);
+        this.plugin.playbackRate = rate;
+    };
+
+
+    PlayerHtml5.prototype.requestFullscreen = function () {
+        var windowSize = this.getWindowSize();
+        var plugin = this.getPluginObject();
+
+        plugin.width = windowSize[0];
+        plugin.height = windowSize[1];
+
+        plugin.style.position = 'fixed';
+        plugin.style.top = '0px';
+        plugin.style.left = '0px';
+        plugin.style.width = windowSize[0] + 'px';
+        plugin.style.height = windowSize[1] + 'px';
+        return true;
+    };
+
+
+    PlayerHtml5.prototype.exitFullscreen = function () {
+        var plugin = this.getPluginObject();
+
+        plugin.width = this.getOption('width');
+        plugin.height = this.getOption('height');
+
+        plugin.style.position = 'relative';
+        plugin.style.width = plugin.width + 'px';
+        plugin.style.height = plugin.height + 'px';
+        return true;
+    };
+
+
+    PlayerHtml5.prototype.getInfo = function () {
+        var plugin = this.getPluginObject();
+        var info = {
+            duration: plugin.duration,
+            currentTime: plugin.currentTime,
+            bufferedLenght: plugin.buffered.length,
+            //bufferedStart: plugin.buffered.start(),
+            //bufferedEnd: plugin.buffered.end()
+        };
+
+        return info;
+    };
+
+
+    PlayerHtml5.prototype.getCurrentTime = function () {
+        var currentTime = this.getPluginObject().currentTime.toFixed(3);
+        return currentTime;
+    };
+
+
+    PlayerHtml5.prototype.getDuration = function () {
+        var duration = this.getPluginObject().duration.toFixed(3);
+        return duration;
+    }
 
     window.VideoPlayer = VideoPlayer;
 })();

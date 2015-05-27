@@ -138,8 +138,8 @@
                 </button>
                 <button nv-el class="btn btn-default" id="fwd2" onclick="videoPlayer.setCurrentTime(64)"> to 65 sec </button>
 
-                <button nv-el class="btn btn-default" id="122" onclick="smallScreen()"> <span class="gliphicon glyphicon glyphicon-resize-small"></span> </button>
-                <button nv-el class="btn btn-default" id="123" onclick="fullScreen()"> <span class="glyphicon glyphicon-fullscreen"></span> </button>
+                <button nv-el class="btn btn-default" id="122" onclick="exitFullscreen()"> <span class="gliphicon glyphicon glyphicon-resize-small"></span> </button>
+                <button nv-el class="btn btn-default" id="123" onclick="requestFullscreen()"> <span class="glyphicon glyphicon-fullscreen"></span> </button>
                 <button nv-el class="btn btn-default" id="124" onclick="videoPlayer.getInfo()"> <span class="glyphicon glyphicon-info-sign"></span> </button>
             </div>
         </div>
@@ -148,12 +148,12 @@
     <div class="container" id="console"></div>
 
     <script>
-        function fullScreen(){
-            videoPlayer.fullScreen();
+        function requestFullscreen(){
+            videoPlayer.requestFullscreen();
         }
 
-        function smallScreen() {
-            videoPlayer.fullScreen(false);
+        function exitFullscreen() {
+            videoPlayer.exitFullscreen();
         }
     </script>
 
