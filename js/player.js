@@ -325,7 +325,7 @@
      * @abstract
      * @return {HTMLElement}
      */
-    PlayerInterface.prototype.getPluginObject = function () {
+    PlayerInterface.prototype.getPlugin = function () {
         throw new Error('init not implemented');
     };
 
@@ -543,7 +543,7 @@
      * Initialize and return samsung video plugin
      * @returns {HTMLElement}
      */
-    PlayerSamsungSef.prototype.getPluginObject = function () {
+    PlayerSamsungSef.prototype.getPlugin = function () {
         if(!this.plugin){
             var plugin = document.createElement('object');
             plugin.setAttribute('id', 'pluginSEF');
@@ -584,7 +584,7 @@
      */
     PlayerSamsungSef.prototype.init = function () {
         this.container = this.getContainer();
-        this.plugin = this.getPluginObject();
+        this.plugin = this.getPlugin();
         var self = this;
 
         var createHandler = function (fnName) {
@@ -688,7 +688,7 @@
      * @param {number} height
      */
     PlayerSamsungSef.prototype.setScreenSize = function(width, height){
-        var plugin = this.getPluginObject();
+        var plugin = this.getPlugin();
         plugin.style.left = '0px';
         plugin.style.top = '0px';
         plugin.style.width = width + 'px';
@@ -1114,7 +1114,7 @@
     };
 
 
-    PlayerSamsungPlugin.prototype.getPluginObject = function () {
+    PlayerSamsungPlugin.prototype.getPlugin = function () {
         if(!this.plugin){
             var plugin = document.createElement('object');
             plugin.setAttribute('id', 'pluginPlayer');
@@ -1178,7 +1178,7 @@
      * Initialize and return video plugin
      * @returns {HTMLElement}
      */
-    PlayerHtml5.prototype.getPluginObject = function () {
+    PlayerHtml5.prototype.getPlugin = function () {
         if(!this.plugin){
             var plugin = document.createElement('video');
             plugin.setAttribute('id', 'videoPlugin');
@@ -1202,7 +1202,7 @@
     PlayerHtml5.prototype.init = function () {
         log('init');
         var container = this.getContainer();
-        var plugin = this.getPluginObject();
+        var plugin = this.getPlugin();
         var self = this;
 
         plugin.addEventListener('timeupdate', function () {
@@ -1225,7 +1225,7 @@
 
     PlayerHtml5.prototype.deinit = function () {
         var container = this.getContainer();
-        container.removeChild(this.getPluginObject());
+        container.removeChild(this.getPlugin());
         this.plugin = null;
         this._setState(STATE_NOT_INIT);
         return true;
@@ -1301,7 +1301,7 @@
 
     PlayerHtml5.prototype.requestFullscreen = function () {
         var windowSize = this.getWindowSize();
-        var plugin = this.getPluginObject();
+        var plugin = this.getPlugin();
 
         plugin.width = windowSize[0];
         plugin.height = windowSize[1];
@@ -1316,7 +1316,7 @@
 
 
     PlayerHtml5.prototype.exitFullscreen = function () {
-        var plugin = this.getPluginObject();
+        var plugin = this.getPlugin();
 
         plugin.width = this.getOption('width');
         plugin.height = this.getOption('height');
@@ -1329,7 +1329,7 @@
 
 
     PlayerHtml5.prototype.getInfo = function () {
-        var plugin = this.getPluginObject();
+        var plugin = this.getPlugin();
         var info = {
             duration: plugin.duration,
             currentTime: plugin.currentTime,
@@ -1343,13 +1343,13 @@
 
 
     PlayerHtml5.prototype.getCurrentTime = function () {
-        var currentTime = this.getPluginObject().currentTime.toFixed(3);
+        var currentTime = this.getPlugin().currentTime.toFixed(3);
         return currentTime;
     };
 
 
     PlayerHtml5.prototype.getDuration = function () {
-        var duration = this.getPluginObject().duration.toFixed(3);
+        var duration = this.getPlugin().duration.toFixed(3);
         return duration;
     }
 
