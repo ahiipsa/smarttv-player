@@ -1,0 +1,56 @@
+html, body, div, object {
+    padding: 0;
+    margin: 0;
+    border: none;
+    left: 0;
+    top: 0;
+}
+
+body {
+    background-color: white;
+    padding: 0;
+    margin: 0;
+    left: 0;
+    top: 0;
+    padding-top: 70px;
+}
+
+#playerContainer {
+    display: block;
+    position: relative;
+    /*margin: 0px;*/
+    padding: 0px;
+    overflow: hidden;
+    box-sizing: border-box;
+    background-color: #b92c28;
+    border-right: 1px solid green;
+    width: 470px;
+    height: 280px;
+}
+
+.player {
+    display: block;
+    position: relative;
+    padding: 0px;
+    margin: 0px;
+    width: 480px;
+    height: 270px;
+}
+
+
+#console {
+    height: 200px;
+    overflow-y: scroll;
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.nv-el-current {
+    border: 1px solid green;
+}
+
+.center-block {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
