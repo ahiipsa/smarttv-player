@@ -30,6 +30,7 @@
     states[STATE_PLAY]    = 'play';
     states[STATE_PAUSE]   = 'pause';
 
+    var log = window.log?window.log: function () {};
 
     function Observer() {}
 
