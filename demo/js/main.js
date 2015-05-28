@@ -132,14 +132,14 @@
         try {
             var deviceId = externalPlugin.GetESN('WIDEVINE');
             if ( !deviceId ) {
-                throw new Exception('GetESN is not supported. Please reboot the device and call to Samsung service center if the issue happens again.');
+                throw new Error('GetESN is not supported. Please reboot the device and call to Samsung service center if the issue happens again.');
             }
             if ((deviceId+'').substr(0, Math.min(deviceId.length, 2)) != 'SS') {
-                throw new Exception('deviceId is not valid. Please reboot the device and call to Samsung service center if the issue happens again .');
+                throw new Error('deviceId is not valid. Please reboot the device and call to Samsung service center if the issue happens again .');
             }
         }
         catch (e) {
-            log("EXCEPTION(getESN): " + e);
+            log("Error: " + e.stack);
             return null;
         }
         return deviceId;

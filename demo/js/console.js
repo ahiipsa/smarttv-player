@@ -5,8 +5,7 @@
 
         var consoleDom = document.getElementById('console');
         var div = document.createElement('div');
-        var textNode = document.createTextNode( string );
-        div.appendChild( textNode );
+        div.innerHTML = string.replace(/(?:\r\n|\r|\n)/g, '<br />');
         consoleDom.appendChild( div );
 
         consoleDom.scrollTop = consoleDom.scrollHeight;

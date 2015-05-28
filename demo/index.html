@@ -3,6 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Player</title>
+    <base href="./" />
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css"/>
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
     <style type="text/css">
@@ -20,6 +21,7 @@
             margin: 0;
             left: 0;
             top: 0;
+            padding-top: 70px;
         }
 
         #playerContainer {
@@ -78,12 +80,24 @@
     <object id="externalPlugin" border="0" classid="clsid:SAMSUNG-INFOLINK-EXTERNALWIDGETINTERFACE" style="opacity:0.0;backgroundcolor:#000000;width:0px;height:0px;"></object>
 </head>
 <body>
-    <div class="container" nv-scope="main" nv-scope-current>
-        <div class="row">
-            <div class="col-md-12">
-                <h2>Player</h2>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Player</a>
+                <ul class="nav navbar-nav">
+                    <li><a href="javascript: location.reload(true)"><span class="glyphicon glyphicon-refresh"></span> Refresh</a></li>
+                </ul>
             </div>
-        </div>
+        </div><!-- /.container-fluid -->
+    </nav>
+    <div class="container" nv-scope="main" nv-scope-current>
         <div class="row">
             <div class="col-md-6">
                 <div id="playerContainer"></div>
@@ -143,7 +157,6 @@
                 <button nv-el class="btn btn-default" id="124" onclick="videoPlayer.getInfo()"> <span class="glyphicon glyphicon-info-sign"></span> </button>
             </div>
         </div>
-
     </div>
     <div class="container" id="console"></div>
 
@@ -160,7 +173,7 @@
     <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script type="text/javascript" src="js/console.js"></script>
-    <script type="text/javascript" src="src/player.js"></script>
+    <script type="text/javascript" src="js/player.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
 </body>
 </html>

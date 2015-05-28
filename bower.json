@@ -1,18 +1,23 @@
 {
-  "name": "player",
-  "version": "0.0.0",
+  "name": "smarttv-player",
+  "version": "0.0.1",
   "authors": [
     "Sergey Karasev <ahiipsa@gmail.com>"
   ],
   "license": "MIT",
   "ignore": [
-    "**/.*",
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "src",
+    ".gitignore"
   ],
-  "dependencies": {
-    "navigation": "~1.0.3"
-  }
+  "description": "player for smarttv apps",
+  "main": "dist/player.js",
+  "keywords": [
+    "smarttv",
+    "video",
+    "player"
+  ]
 }

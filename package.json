@@ -1,0 +1,27 @@
+{
+  "name": "smarttv-player",
+  "version": "0.0.1",
+  "description": "video player for smarttv apps",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.look1.ru:s.karasev/video_player.git"
+  },
+  "keywords": [
+    "smarttv",
+    "video",
+    "player"
+  ],
+  "author": "Sergey Karasev",
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-connect": "^2.2.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.2.0",
+    "watchify": "^3.2.1"
+  }
+}
