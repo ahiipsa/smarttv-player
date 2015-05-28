@@ -47,7 +47,9 @@
         log('app start');
         log('location', location.href);
 
-        var playerVideo = new VideoPlayer('html5', {
+        var playerType = 'samsung';
+
+        var playerVideo = new VideoPlayer(playerType, {
             url: 'http://cdp.look1.ru/trailer/e9350309-194b-4e0d-b967-ccd4647baeb4.mp4',
             containerId: 'playerContainer',
             esn: getESN(),
@@ -70,7 +72,7 @@
         var duration = 0;
 
         playerVideo.on('timeupdate', function (seconds) {
-            document.getElementById('currentTime').innerText = playerVideo.getCurrentTime();
+            document.getElementById('currentTime').innerText = seconds;
             document.getElementById('progressbar').style.width = (seconds / (duration / 100)) + '%';
         });
 
@@ -81,14 +83,12 @@
         });
 
 
-        playerVideo.on('info', function (info) {
-
-            log('duration', info.duration);
-            info.duration = Math.floor( info.duration );
-            duration = info.duration;
-            document.getElementById('duration').innerText = info.duration;
-
-        });
+        //playerVideo.on('info', function (info) {
+        //    log('duration', info.duration);
+        //    info.duration = Math.floor( info.duration );
+        //    duration = info.duration;
+        //    document.getElementById('duration').innerText = info.duration;
+        //});
 
         /*
 
