@@ -1,35 +1,39 @@
 var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     rename = require('gulp-rename'),
-    connect = require('gulp-connect');
+    connect = require('gulp-connect'),
+    concat = require('gulp-concat'),
+    browserify = require('browserify'),
+    p = require('partialify/custom'),
+    source = require('vinyl-source-stream'),
+    streamify = require('gulp-streamify'),
+    uglify = require('gulp-uglify'),
+    runSequence = require('run-sequence');
 
-gulp.task('build', ['copy', 'compress']);
+var options = {
+    production: false
+};
+
+gulp.task('build', function (callback) {
+    runSequence('js', 'copy', callback);
+});
+
 gulp.task('default', ['build', 'watch', 'connect']);
 
-gulp.task('copy', function () {
-    gulp.src('src/player.js')
-        .pipe(gulp.dest('dist'));
 
-    gulp.src('src/player.js')
-        .pipe(gulp.dest('demo/js'));
+gulp.task('js', function() {
+    var stream = browserify({entries:'./src/player.js', debug: options.production})
+        .transform(p.alsoAllow('html'))
+        .bundle().on('error', errorHandler)
+        .pipe(source('player.js'))
+        .pipe(gulp.dest('./dist'));
+
+    return stream;
 });
 
 
-gulp.task('compress', function() {
-    gulp.src('src/player.js')
-        .pipe(uglify({
-                mangle: false,
-                compress: {
-                    drop_debugger: true,
-                    dead_code: true,
-                    global_defs: {
-                        DEBUG: false
-                    }
-                }
-            }
-        ))
-        .pipe(rename('player.min.js'))
-        .pipe(gulp.dest('dist'));
+gulp.task('copy', function () {
+    return gulp.src('./dist/player.js').pipe(gulp.dest('./demo/js/'));
 });
 
 
@@ -42,12 +46,14 @@ gulp.task('watch', function () {
         },
         ['build']
     );
-
-    //gulp.watch(
-    //    ['./build/js/app.js']
-    //).on('change', livereload.changed);
 });
 
 gulp.task('connect', function() {
     connect.server({root: 'demo'});
 });
+
+
+function errorHandler (error) {
+    throw new error;
+    this.emit('end');
+}
