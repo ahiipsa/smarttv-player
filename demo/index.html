@@ -76,7 +76,7 @@
                 <button nv-el class="btn btn-default" id="rbw" onclick="videoPlayer.setPlaybackSpeed(-2)">
                     <span class="glyphicon glyphicon-backward"></span> 2x
                 </button>
-                <button nv-el class="btn btn-default" id="jbw" aria-label="fast-backward" onclick="videoPlayer.stepBackward(10)">
+                <button nv-el class="btn btn-default" id="jbw" aria-label="fast-backward" onclick="videoPlayer.stepBackward(10000)">
                     <span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
                 </button>
                 <button nv-el class="btn btn-default" id="stop" aria-label="Stop" onclick="videoPlayer.stop()">
@@ -88,7 +88,7 @@
                 <button nv-el nv-el-current class="btn btn-default" id="play" aria-label="Play" onclick="videoPlayer.play()">
                     <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
                 </button>
-                <button nv-el class="btn btn-default" id="jfw" onclick="videoPlayer.stepForward(10)">
+                <button nv-el class="btn btn-default" id="jfw" onclick="videoPlayer.stepForward(10000)">
                     <span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
                 </button>
                 <button nv-el class="btn btn-default" id="fwd" onclick="videoPlayer.setPlaybackSpeed(2)">
@@ -97,7 +97,7 @@
                 <button nv-el class="btn btn-default" id="normalSpeed" onclick="videoPlayer.setPlaybackSpeed(1)">
                     1x <span class="glyphicon glyphicon-forward"></span>
                 </button>
-                <button nv-el class="btn btn-default" id="fwd2" onclick="videoPlayer.setCurrentTime(64)"> to 65 sec </button>
+                <button nv-el class="btn btn-default" id="fwd2" onclick="videoPlayer.setCurrentTime(65000)"> to 65 sec </button>
 
                 <button nv-el class="btn btn-default" id="122" onclick="exitFullscreen()"> <span class="gliphicon glyphicon glyphicon-resize-small"></span> </button>
                 <button nv-el class="btn btn-default" id="123" onclick="requestFullscreen()"> <span class="glyphicon glyphicon-fullscreen"></span> </button>

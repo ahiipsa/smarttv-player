@@ -7,7 +7,8 @@ extend(PlayerAbstract, Observer);
 
 /**
  * Player Abstract
- * @abstract
+ * @constructor
+ * @param {object} options
  */
 function PlayerAbstract (options) {
     this.state = this.STATE_NOT_INIT;
@@ -191,6 +192,13 @@ PlayerAbstract.prototype.stop = function () {
     throw new Error('stop not implemented');
 };
 
+/**
+ * @abstract
+ */
+PlayerAbstract.prototype.resume = function () {
+    throw new Error('resume not implemented');
+};
+
 
 /**
  * @abstract
@@ -234,6 +242,14 @@ PlayerAbstract.prototype.startPlayback = function () {
     throw new Error('startPlayback not implemented');
 };
 
+/**
+ * @abstract
+ * @param {number} speed
+ */
+PlayerAbstract.prototype.setPlaybackSpeed = function (speed) {
+    throw new Error('setPlaybackSpeed not implemented');
+};
+
 
 /**
  * @abstract
@@ -259,23 +275,31 @@ PlayerAbstract.prototype.exitFullscreen = function () {
 };
 
 
+/**
+ * Return window size [width, height]
+ * @returns {number[]}
+ */
 PlayerAbstract.prototype.getWindowSize = function () {
     var w = window,
         d = document,
         e = d.documentElement,
         g = d.getElementsByTagName('body')[0],
-        x = w.innerWidth || e.clientWidth || g.clientWidth,
-        y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+        width = w.innerWidth || e.clientWidth || g.clientWidth,
+        height = w.innerHeight|| e.clientHeight|| g.clientHeight;
 
-    return [x, y];
+    return [width, height];
 };
 
 
+/**
+ * Return device screen size [width, height]
+ * @returns {number[]}
+ */
 PlayerAbstract.prototype.getDeviceScreenSize = function() {
-    var sw = window.screen.availWidth,
-        sh = window.screen.availHeight;
+    var width = window.screen.availWidth,
+        height = window.screen.availHeight;
 
-    return [sw, sh];
+    return [width, height];
 };
 
 

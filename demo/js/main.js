@@ -25,6 +25,7 @@
 
     window.onload = function () {
         log('window.onload');
+
         start();
     };
 
@@ -47,7 +48,7 @@
         log('app start');
         log('location', location.href);
 
-        var playerType = 'html5';
+        var playerType = 'lg';
 
         var playerVideo = new VideoPlayer(playerType, {
             url: 'http://cdp.look1.ru/trailer/e9350309-194b-4e0d-b967-ccd4647baeb4.mp4',

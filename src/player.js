@@ -1,5 +1,6 @@
 var PlayerSamsung = require('./player.samsung.js'),
     PlayerHtml5 = require('./player.html5.js'),
+    PlayerLG = require('./player.lg.js'),
     log = require('./log.js');
 
 function VideoPlayer(type, options) {
@@ -19,6 +20,9 @@ VideoPlayer.prototype.playerFactory = function (type, options) {
             break;
         case 'html5':
             player = new PlayerHtml5(options);
+            break;
+        case 'lg':
+            player = new PlayerLG(options);
             break;
         default :
             throw new Error('player ' + type + ' is not declared');
@@ -63,7 +67,7 @@ VideoPlayer.prototype.play = function (seconds) {
     switch(state){
         case player.STATE_ERROR:
         case player.STATE_NOT_INIT:
-            player.player.init();
+            player.init();
             result = this.startPlayback(seconds);
             if(result){
                 player._setState(player.STATE_PLAY);
