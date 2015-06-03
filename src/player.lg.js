@@ -192,7 +192,7 @@ PlayerLG.prototype.stop = function () {
 
 
 PlayerLG.prototype.resume = function () {
-    this.play();
+    this.play(1);
     return true;
 };
 
@@ -217,38 +217,33 @@ PlayerLG.prototype._deleteInterval = function () {
 
 PlayerLG.prototype.stepBackward = function (ms) {
     var ms = parseInt(ms, 10);
-    var jumpTo = (this.getCurrentTime() - ms);
-    this.setCurrentTime(jumpTo);
+    this.setCurrentTime(this.getCurrentTime() - ms);
 };
 
 
 PlayerLG.prototype.stepForward = function (ms) {
     var ms = parseInt(ms, 10);
-    var jumpTo = (this.getCurrentTime() + ms);
-    this.setCurrentTime(jumpTo);
+    this.setCurrentTime(this.getCurrentTime() + ms);
 };
 
 
 PlayerLG.prototype.getCurrentTime = function () {
-    var playPosition = parseInt(this.getPlugin().playPosition, 10);
-    return playPosition;
+    return this.timeToMseconds( parseInt(this.getPlugin().playPosition, 10) );
 };
 
 
 PlayerLG.prototype.getDuration = function () {
-    var duration = parseInt(this.getPlugin().playTime, 10);
-    return duration;
+    return this.timeToMseconds(parseInt(this.getPlugin().playTime, 10));
 };
 
 
 PlayerLG.prototype.setCurrentTime = function (ms) {
-    this.plugin.seek(ms);
+    this.plugin.seek( this.msecondsToPlugin(ms) );
 };
 
 
 PlayerLG.prototype.setPlaybackSpeed  = function (speed) {
     var speed = parseInt(speed, 10);
-    log('speed', speed, typeof speed);
     this.getPlugin().play(speed);
 };
 
@@ -279,6 +274,16 @@ PlayerLG.prototype.exitFullscreen = function () {
     plugin.style.width = plugin.width + 'px';
     plugin.style.height = plugin.height + 'px';
     return true;
+};
+
+
+PlayerLG.prototype.timeToMseconds = function (time) {
+    return time;
+};
+
+
+PlayerLG.prototype.msecondsToPlugin = function (mseconds) {
+    return mseconds;
 };
 
 

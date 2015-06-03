@@ -585,6 +585,22 @@ PlayerAbstract.prototype.getInfo = function () {
 };
 
 
+/**
+ * @abstract
+ */
+PlayerAbstract.msecondsToPlugin = function () {
+    throw new Error('msecondsToPlugin not implemented');
+};
+
+
+/**
+ * @abstract
+ */
+PlayerAbstract.timeToMseconds = function () {
+    throw new Error('toToPlugin not implemented');
+};
+
+
 module.exports = PlayerAbstract;
 },{"./helpers.js":2,"./log.js":3,"./observer.js":4}],6:[function(require,module,exports){
 var extend = require('./helpers.js').extend,
@@ -596,7 +612,7 @@ extend(PlayerHtml5, PlayerAbstract);
 
 function PlayerHtml5 (options) {
     PlayerHtml5.superclass.constructor.apply(this, arguments);
-    log('player html5 create 123');
+    log('player html5 create');
 }
 
 
@@ -704,19 +720,19 @@ PlayerHtml5.prototype.stop = function () {
 };
 
 
-PlayerHtml5.prototype.setCurrentTime = function (sec) {
-    this.getPlugin().currentTime = sec;
+PlayerHtml5.prototype.setCurrentTime = function (msec) {
+    this.getPlugin().currentTime = this.msecondsToPlugin(msec);
     return true;
 };
 
 
-PlayerHtml5.prototype.stepForward = function (sec) {
-    this.getPlugin().currentTime = this.getPlugin().currentTime + sec;
+PlayerHtml5.prototype.stepForward = function (ms) {
+    this.setCurrentTime(this.getCurrentTime() + ms);
 };
 
 
-PlayerHtml5.prototype.stepBackward = function (sec) {
-    this.getPlugin().currentTime = this.getPlugin().currentTime - sec;
+PlayerHtml5.prototype.stepBackward = function (ms) {
+    this.setCurrentTime(this.getCurrentTime() - ms);
 };
 
 
@@ -759,8 +775,8 @@ PlayerHtml5.prototype.exitFullscreen = function () {
 PlayerHtml5.prototype.getInfo = function () {
     var plugin = this.getPlugin();
     return {
-        duration: plugin.duration,
-        currentTime: plugin.currentTime,
+        duration: this.getDuration(),
+        currentTime: this.getCurrentTime(),
         bufferedLenght: plugin.buffered.length
         //bufferedStart: plugin.buffered.start(),
         //bufferedEnd: plugin.buffered.end()
@@ -769,14 +785,23 @@ PlayerHtml5.prototype.getInfo = function () {
 
 
 PlayerHtml5.prototype.getCurrentTime = function () {
-    return this.getPlugin().currentTime.toFixed(3);
+    return this.timeToMseconds(this.getPlugin().currentTime);
 };
 
 
 PlayerHtml5.prototype.getDuration = function () {
-    return this.getPlugin().duration.toFixed(3);
+    return Math.round((this.getPlugin().duration * 1000));
 };
 
+
+PlayerHtml5.prototype.timeToMseconds = function (time) {
+    return Math.round(time * 1000);
+};
+
+
+PlayerHtml5.prototype.msecondsToPlugin = function (mseconds) {
+    return mseconds / 1000;
+};
 
 module.exports = PlayerHtml5;
 },{"./helpers.js":2,"./log.js":3,"./player.abstract.js":5}],7:[function(require,module,exports){
@@ -974,7 +999,7 @@ PlayerLG.prototype.stop = function () {
 
 
 PlayerLG.prototype.resume = function () {
-    this.play();
+    this.play(1);
     return true;
 };
 
@@ -999,38 +1024,33 @@ PlayerLG.prototype._deleteInterval = function () {
 
 PlayerLG.prototype.stepBackward = function (ms) {
     var ms = parseInt(ms, 10);
-    var jumpTo = (this.getCurrentTime() - ms);
-    this.setCurrentTime(jumpTo);
+    this.setCurrentTime(this.getCurrentTime() - ms);
 };
 
 
 PlayerLG.prototype.stepForward = function (ms) {
     var ms = parseInt(ms, 10);
-    var jumpTo = (this.getCurrentTime() + ms);
-    this.setCurrentTime(jumpTo);
+    this.setCurrentTime(this.getCurrentTime() + ms);
 };
 
 
 PlayerLG.prototype.getCurrentTime = function () {
-    var playPosition = parseInt(this.getPlugin().playPosition, 10);
-    return playPosition;
+    return this.timeToMseconds( parseInt(this.getPlugin().playPosition, 10) );
 };
 
 
 PlayerLG.prototype.getDuration = function () {
-    var duration = parseInt(this.getPlugin().playTime, 10);
-    return duration;
+    return this.timeToMseconds(parseInt(this.getPlugin().playTime, 10));
 };
 
 
 PlayerLG.prototype.setCurrentTime = function (ms) {
-    this.plugin.seek(ms);
+    this.plugin.seek( this.msecondsToPlugin(ms) );
 };
 
 
 PlayerLG.prototype.setPlaybackSpeed  = function (speed) {
     var speed = parseInt(speed, 10);
-    log('speed', speed, typeof speed);
     this.getPlugin().play(speed);
 };
 
@@ -1064,6 +1084,16 @@ PlayerLG.prototype.exitFullscreen = function () {
 };
 
 
+PlayerLG.prototype.timeToMseconds = function (time) {
+    return time;
+};
+
+
+PlayerLG.prototype.msecondsToPlugin = function (mseconds) {
+    return mseconds;
+};
+
+
 module.exports = PlayerLG;
 },{"./helpers.js":2,"./log.js":3,"./player.abstract.js":5}],8:[function(require,module,exports){
 var extend = require('./helpers.js').extend,
@@ -1080,8 +1110,8 @@ function PlayerSamsungSef (options) {
 }
 
 
-PlayerSamsungSef.prototype.currentTime = 0.000;
-PlayerSamsungSef.prototype.duration = 0.000;
+PlayerSamsungSef.prototype.currentTime = 0;
+PlayerSamsungSef.prototype.duration = 0;
 
 
 /**
@@ -1297,20 +1327,20 @@ PlayerSamsungSef.prototype.startPlayback = function (seconds) {
 
 /**
  * Jump to timestamp
- * @param {number} timestamp
+ * @param {number} ms
  * @returns {boolean}
  */
-PlayerSamsungSef.prototype.setCurrentTime = function (timestamp) {
+PlayerSamsungSef.prototype.setCurrentTime = function (ms) {
     var currentTime = this.getCurrentTime();
     var jump = 0;
 
-    if(timestamp > this.currentTime){
-        jump = timestamp - currentTime;
+    if(ms > this.currentTime){
+        jump = ms - currentTime;
         return this.execute('JumpForward', jump );
     }
 
-    if(timestamp < this.currentTime){
-        jump = currentTime - timestamp;
+    if(ms < this.currentTime){
+        jump = currentTime - ms;
         return this.execute('JumpBackward', jump );
     }
 };
@@ -1452,9 +1482,6 @@ PlayerSamsungSef.prototype.onEvent = function (event, arg1, arg2) {
  */
 PlayerSamsungSef.prototype.onStreamInfoReady = function () {
     log( 'onStreamInfoReady' );
-    // duration = Math.round(duration / 1000);
-    // this.setDuration( duration );
-    // document.getElementById('duration').innerText = duration.toString();
 
     var info = this.getInfo();
     var plugin = this.getPlugin();
@@ -1476,8 +1503,11 @@ PlayerSamsungSef.prototype.getCurrentTime = function () {
 PlayerSamsungSef.prototype.getInfo = function () {
 
     log('GET INFO');
+
+    this.duration = this.timeToMseconds(this.execute('GetDuration'));
+
     var info = {
-        duration: this.execute('GetDuration'),
+        duration: this.duration,
         width: this.execute('GetVideoWidth'),
         height: this.execute('GetVideoHeight'),
         resolution: this.execute('GetVideoResolution'),
@@ -1497,7 +1527,7 @@ PlayerSamsungSef.prototype.getInfo = function () {
         log(param, info[param]);
     }
 
-    this.duration = (info.duration / 1000).toFixed(3);
+
     this.emit('durationchange', this.duration);
     var videoRatio = info.width / info.height;
     var size = this.getDeviceScreenSize();
@@ -1646,13 +1676,13 @@ PlayerSamsungSef.prototype.onBufferingProgress = function(percent) {
 
 /**
  * OnCurrentPlayTime is sent by media player to notify current playback time.
- * @param {number} msec
+ * @param {number}
  */
 PlayerSamsungSef.prototype.onCurrentPlayTime = function(msec) {
-    this.currentTime = (msec / 1000).toFixed(3);
+    this.currentTime = this.timeToMseconds(msec);
 
     if(this.currentTime < 0){
-        this.currentTime = 0.000;
+        this.currentTime = 0;
     }
 
     this.emit('timeupdate', this.currentTime);
@@ -1661,6 +1691,16 @@ PlayerSamsungSef.prototype.onCurrentPlayTime = function(msec) {
 
 PlayerSamsungSef.prototype.onResolutionChanged = function () {
     log('onResolutionChanged');
+};
+
+
+PlayerSamsungSef.prototype.timeToMseconds = function (time) {
+    return time;
+};
+
+
+PlayerSamsungSef.prototype.msecondsToPlugin = function (mseconds) {
+    return mseconds;
 };
 
 

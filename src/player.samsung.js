@@ -12,8 +12,8 @@ function PlayerSamsungSef (options) {
 }
 
 
-PlayerSamsungSef.prototype.currentTime = 0.000;
-PlayerSamsungSef.prototype.duration = 0.000;
+PlayerSamsungSef.prototype.currentTime = 0;
+PlayerSamsungSef.prototype.duration = 0;
 
 
 /**
@@ -229,20 +229,20 @@ PlayerSamsungSef.prototype.startPlayback = function (seconds) {
 
 /**
  * Jump to timestamp
- * @param {number} timestamp
+ * @param {number} ms
  * @returns {boolean}
  */
-PlayerSamsungSef.prototype.setCurrentTime = function (timestamp) {
+PlayerSamsungSef.prototype.setCurrentTime = function (ms) {
     var currentTime = this.getCurrentTime();
     var jump = 0;
 
-    if(timestamp > this.currentTime){
-        jump = timestamp - currentTime;
+    if(ms > this.currentTime){
+        jump = ms - currentTime;
         return this.execute('JumpForward', jump );
     }
 
-    if(timestamp < this.currentTime){
-        jump = currentTime - timestamp;
+    if(ms < this.currentTime){
+        jump = currentTime - ms;
         return this.execute('JumpBackward', jump );
     }
 };
@@ -384,9 +384,6 @@ PlayerSamsungSef.prototype.onEvent = function (event, arg1, arg2) {
  */
 PlayerSamsungSef.prototype.onStreamInfoReady = function () {
     log( 'onStreamInfoReady' );
-    // duration = Math.round(duration / 1000);
-    // this.setDuration( duration );
-    // document.getElementById('duration').innerText = duration.toString();
 
     var info = this.getInfo();
     var plugin = this.getPlugin();
@@ -408,8 +405,11 @@ PlayerSamsungSef.prototype.getCurrentTime = function () {
 PlayerSamsungSef.prototype.getInfo = function () {
 
     log('GET INFO');
+
+    this.duration = this.timeToMseconds(this.execute('GetDuration'));
+
     var info = {
-        duration: this.execute('GetDuration'),
+        duration: this.duration,
         width: this.execute('GetVideoWidth'),
         height: this.execute('GetVideoHeight'),
         resolution: this.execute('GetVideoResolution'),
@@ -429,7 +429,7 @@ PlayerSamsungSef.prototype.getInfo = function () {
         log(param, info[param]);
     }
 
-    this.duration = (info.duration / 1000).toFixed(3);
+
     this.emit('durationchange', this.duration);
     var videoRatio = info.width / info.height;
     var size = this.getDeviceScreenSize();
@@ -578,13 +578,13 @@ PlayerSamsungSef.prototype.onBufferingProgress = function(percent) {
 
 /**
  * OnCurrentPlayTime is sent by media player to notify current playback time.
- * @param {number} msec
+ * @param {number}
  */
 PlayerSamsungSef.prototype.onCurrentPlayTime = function(msec) {
-    this.currentTime = (msec / 1000).toFixed(3);
+    this.currentTime = this.timeToMseconds(msec);
 
     if(this.currentTime < 0){
-        this.currentTime = 0.000;
+        this.currentTime = 0;
     }
 
     this.emit('timeupdate', this.currentTime);
@@ -593,6 +593,16 @@ PlayerSamsungSef.prototype.onCurrentPlayTime = function(msec) {
 
 PlayerSamsungSef.prototype.onResolutionChanged = function () {
     log('onResolutionChanged');
+};
+
+
+PlayerSamsungSef.prototype.timeToMseconds = function (time) {
+    return time;
+};
+
+
+PlayerSamsungSef.prototype.msecondsToPlugin = function (mseconds) {
+    return mseconds;
 };
 
 

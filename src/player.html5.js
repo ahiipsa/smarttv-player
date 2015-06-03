@@ -7,7 +7,7 @@ extend(PlayerHtml5, PlayerAbstract);
 
 function PlayerHtml5 (options) {
     PlayerHtml5.superclass.constructor.apply(this, arguments);
-    log('player html5 create 123');
+    log('player html5 create');
 }
 
 
@@ -115,19 +115,19 @@ PlayerHtml5.prototype.stop = function () {
 };
 
 
-PlayerHtml5.prototype.setCurrentTime = function (sec) {
-    this.getPlugin().currentTime = sec;
+PlayerHtml5.prototype.setCurrentTime = function (msec) {
+    this.getPlugin().currentTime = this.msecondsToPlugin(msec);
     return true;
 };
 
 
-PlayerHtml5.prototype.stepForward = function (sec) {
-    this.getPlugin().currentTime = this.getPlugin().currentTime + sec;
+PlayerHtml5.prototype.stepForward = function (ms) {
+    this.setCurrentTime(this.getCurrentTime() + ms);
 };
 
 
-PlayerHtml5.prototype.stepBackward = function (sec) {
-    this.getPlugin().currentTime = this.getPlugin().currentTime - sec;
+PlayerHtml5.prototype.stepBackward = function (ms) {
+    this.setCurrentTime(this.getCurrentTime() - ms);
 };
 
 
@@ -170,8 +170,8 @@ PlayerHtml5.prototype.exitFullscreen = function () {
 PlayerHtml5.prototype.getInfo = function () {
     var plugin = this.getPlugin();
     return {
-        duration: plugin.duration,
-        currentTime: plugin.currentTime,
+        duration: this.getDuration(),
+        currentTime: this.getCurrentTime(),
         bufferedLenght: plugin.buffered.length
         //bufferedStart: plugin.buffered.start(),
         //bufferedEnd: plugin.buffered.end()
@@ -180,13 +180,22 @@ PlayerHtml5.prototype.getInfo = function () {
 
 
 PlayerHtml5.prototype.getCurrentTime = function () {
-    return this.getPlugin().currentTime.toFixed(3);
+    return this.timeToMseconds(this.getPlugin().currentTime);
 };
 
 
 PlayerHtml5.prototype.getDuration = function () {
-    return this.getPlugin().duration.toFixed(3);
+    return Math.round((this.getPlugin().duration * 1000));
 };
 
+
+PlayerHtml5.prototype.timeToMseconds = function (time) {
+    return Math.round(time * 1000);
+};
+
+
+PlayerHtml5.prototype.msecondsToPlugin = function (mseconds) {
+    return mseconds / 1000;
+};
 
 module.exports = PlayerHtml5;

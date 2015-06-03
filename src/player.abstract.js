@@ -311,4 +311,20 @@ PlayerAbstract.prototype.getInfo = function () {
 };
 
 
+/**
+ * @abstract
+ */
+PlayerAbstract.msecondsToPlugin = function () {
+    throw new Error('msecondsToPlugin not implemented');
+};
+
+
+/**
+ * @abstract
+ */
+PlayerAbstract.timeToMseconds = function () {
+    throw new Error('toToPlugin not implemented');
+};
+
+
 module.exports = PlayerAbstract;
