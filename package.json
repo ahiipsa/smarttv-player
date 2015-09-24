@@ -2,13 +2,16 @@
   "name": "smarttv-player",
   "version": "0.1.1",
   "description": "video player for smarttv apps",
-  "main": "dist/player.js",
+  "main": "src/player.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git@github.com:ahiipsa/smarttv-player.git"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   },
   "keywords": [
     "smarttv",
