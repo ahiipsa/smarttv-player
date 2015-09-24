@@ -64,12 +64,6 @@
             height: 280
         });
 
-        //var xhttp=new XMLHttpRequest();
-        //xhttp.open("GET","$MANAGER_WIDGET/Common/webapi/1.0/webapis.js",false);
-        //xhttp.send("");
-        //var xmlDoc = xhttp.responseText;
-        //log(xmlDoc);
-
         var duration = 0;
 
         playerVideo.on('timeupdate', function (seconds) {
