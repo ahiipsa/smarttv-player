@@ -1,6 +1,6 @@
 {
   "name": "smarttv-player",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "video player for smarttv apps",
   "main": "src/player.js",
   "scripts": {
