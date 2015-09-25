@@ -18,7 +18,10 @@ Observer.prototype.off = function (event, callback) {
     }
 };
 
-
+/**
+ *
+ * @param event {string}
+ */
 Observer.prototype.emit = function (event) {
     var listeners = this.listeners[event];
 

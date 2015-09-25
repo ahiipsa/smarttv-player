@@ -79,7 +79,7 @@ VideoPlayer.prototype.play = function (seconds) {
                 player._setState(player.STATE_PLAY);
             }
             break;
-        case this.STATE_STOP:
+        case player.STATE_STOP:
             result = this.startPlayback(seconds);
             if(result){
                 player._setState(player.STATE_PLAY);
@@ -92,10 +92,11 @@ VideoPlayer.prototype.play = function (seconds) {
             }
             break;
         case player.STATE_PLAY:
-            result = this.pause();
-            if(result){
-                player._setState(player.STATE_PAUSE);
-            }
+            result = true;
+            //result = this.pause();
+            //if(result){
+            //    player._setState(player.STATE_PAUSE);
+            //}
             break;
         default:
             log('state not declared ' + state);

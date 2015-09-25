@@ -51,7 +51,7 @@
         var playerType = 'html5';
 
         var playerVideo = new VideoPlayer(playerType, {
-            url: 'http://cdp.look1.ru/trailer/e9350309-194b-4e0d-b967-ccd4647baeb4.mp4',
+            url: 'http://msk1cdp.look1.ru/trailer/e9350309-194b-4e0d-b967-ccd4647baeb4.mp4',
             containerId: 'playerContainer',
             esn: getESN(),
             duid: getDUID(),
@@ -75,6 +75,14 @@
         playerVideo.on('durationchange', function (seconds) {
             duration = seconds;
             document.getElementById('duration').innerText = seconds;
+        });
+
+        playerVideo.on('statechange', function (stateName) {
+            console.log('stateName', stateName);
+        });
+
+        playerVideo.on('ended', function () {
+            console.log('ended');
         });
 
 

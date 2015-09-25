@@ -155,8 +155,24 @@ PlayerAbstract.prototype._setState = function (stateCode) {
     }
 
     this.state = stateCode;
-    log('change status', stateCode, this.states[stateCode]);
+    log('change status', stateCode, this.getStateName(stateCode));
+
+    var stateName = this.getStateName(stateCode)
+    this.emit('statechange', stateName);
     return this;
+};
+
+
+/**
+ * Return state name
+ * @param stateCode {number}
+ */
+PlayerAbstract.prototype.getStateName = function (stateCode) {
+    if(this.states[stateCode]){
+        return this.states[stateCode];
+    }
+
+    throw new Error('undeclared state code: ' + stateCode);
 };
 
 
@@ -241,6 +257,7 @@ PlayerAbstract.prototype.play = function () {
 PlayerAbstract.prototype.startPlayback = function () {
     throw new Error('startPlayback not implemented');
 };
+
 
 /**
  * @abstract

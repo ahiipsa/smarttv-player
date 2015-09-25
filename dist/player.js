@@ -80,7 +80,7 @@ VideoPlayer.prototype.play = function (seconds) {
                 player._setState(player.STATE_PLAY);
             }
             break;
-        case this.STATE_STOP:
+        case player.STATE_STOP:
             result = this.startPlayback(seconds);
             if(result){
                 player._setState(player.STATE_PLAY);
@@ -93,10 +93,11 @@ VideoPlayer.prototype.play = function (seconds) {
             }
             break;
         case player.STATE_PLAY:
-            result = this.pause();
-            if(result){
-                player._setState(player.STATE_PAUSE);
-            }
+            result = true;
+            //result = this.pause();
+            //if(result){
+            //    player._setState(player.STATE_PAUSE);
+            //}
             break;
         default:
             log('state not declared ' + state);
@@ -255,7 +256,10 @@ Observer.prototype.off = function (event, callback) {
     }
 };
 
-
+/**
+ *
+ * @param event {string}
+ */
 Observer.prototype.emit = function (event) {
     var listeners = this.listeners[event];
 
@@ -429,8 +433,24 @@ PlayerAbstract.prototype._setState = function (stateCode) {
     }
 
     this.state = stateCode;
-    log('change status', stateCode, this.states[stateCode]);
+    log('change status', stateCode, this.getStateName(stateCode));
+
+    var stateName = this.getStateName(stateCode)
+    this.emit('statechange', stateName);
     return this;
+};
+
+
+/**
+ * Return state name
+ * @param stateCode {number}
+ */
+PlayerAbstract.prototype.getStateName = function (stateCode) {
+    if(this.states[stateCode]){
+        return this.states[stateCode];
+    }
+
+    throw new Error('undeclared state code: ' + stateCode);
 };
 
 
@@ -515,6 +535,7 @@ PlayerAbstract.prototype.play = function () {
 PlayerAbstract.prototype.startPlayback = function () {
     throw new Error('startPlayback not implemented');
 };
+
 
 /**
  * @abstract
@@ -648,6 +669,16 @@ PlayerHtml5.prototype.init = function () {
     var plugin = this.getPlugin();
     var self = this;
 
+    plugin.addEventListener('loadedmetadata', function () {
+        self.emit('loadmetadata');
+    });
+
+    plugin.addEventListener('ended', function () {
+        self.emit('ended');
+        self._setState(self.STATE_PAUSE);
+        self.stop();
+    });
+
     plugin.addEventListener('timeupdate', function () {
         self.emit('timeupdate', self.getCurrentTime());
     });
@@ -738,7 +769,7 @@ PlayerHtml5.prototype.stepBackward = function (ms) {
 
 PlayerHtml5.prototype.setPlaybackSpeed = function (speed) {
     var rate = parseFloat(speed).toFixed(1);
-    log('rate', rate);
+    
     this.getPlugin().playbackRate = rate;
 };
 

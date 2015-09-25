@@ -43,6 +43,16 @@ PlayerHtml5.prototype.init = function () {
     var plugin = this.getPlugin();
     var self = this;
 
+    plugin.addEventListener('loadedmetadata', function () {
+        self.emit('loadmetadata');
+    });
+
+    plugin.addEventListener('ended', function () {
+        self.emit('ended');
+        self._setState(self.STATE_PAUSE);
+        self.stop();
+    });
+
     plugin.addEventListener('timeupdate', function () {
         self.emit('timeupdate', self.getCurrentTime());
     });
@@ -133,7 +143,7 @@ PlayerHtml5.prototype.stepBackward = function (ms) {
 
 PlayerHtml5.prototype.setPlaybackSpeed = function (speed) {
     var rate = parseFloat(speed).toFixed(1);
-    log('rate', rate);
+    
     this.getPlugin().playbackRate = rate;
 };
 
