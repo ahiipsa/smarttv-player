@@ -12,7 +12,6 @@ extend(PlayerLG, PlayerAbstract);
  */
 function PlayerLG (options) {
     PlayerLG.superclass.constructor.apply(this, arguments);
-    log('player lg create');
 }
 
 PlayerLG.prototype._currentTimeInterval = null;
@@ -46,7 +45,6 @@ PlayerLG.prototype.getPlugin = function () {
 
 
 PlayerLG.prototype.init = function () {
-    log('init');
     this.getContainer();
     var plugin = this.getPlugin();
     var self = this;
@@ -76,7 +74,10 @@ PlayerLG.prototype.deinit = function () {
 
 
 /**
- * The NetCast Platform provides an onPlayStateChange event in the Media Player plugin object. Developers can receive play state change event. Developer can receive a play state change event when the play state of currently playing media item is changed.
+ * The NetCast Platform provides an onPlayStateChange event in the Media Player plugin object. Developers can
+ * receive play state change event. Developer can receive a play state change event when the play state of currently
+ * playing media item is changed.
+ *
  * To refer to the values of the playState property, see playState.
  */
 PlayerLG.prototype.onPlayStateChange = function () {
@@ -102,12 +103,10 @@ PlayerLG.prototype.onPlayStateChange = function () {
         this._deleteInterval();
     }
 
-    log('playState', playState, typeof playState);
-
     if(typeof playStates[playState] !== 'undefined'){
-        log('onPlayStateChange', playState, playStates[playState]);
+        console.log('onPlayStateChange', playState, playStates[playState]);
     } else {
-        log('undeclared onPlayStateChange', playState);
+        console.log('undeclared onPlayStateChange', playState);
     }
 };
 
@@ -115,7 +114,7 @@ PlayerLG.prototype.onPlayStateChange = function () {
  * The NetCast Platform provides an onBuffering event in the Media Player plugin object. Developers can receive buffering event. Developers can receive a buffering event when the media player begins and ends buffering. A Boolean type parameter specifies whether data buffering has started or finished. A value of true indicates that the data buffering has started. Buffering also occurs whenever playback stops and then restarts (either from calls to play() and stop()) methods or when network congestion occurs during playing streamed media.
  */
 PlayerLG.prototype.onBuffering = function () {
-    log('onBuffering', this.getPlugin().bufferingProgress);
+    console.log('onBuffering', this.getPlugin().bufferingProgress);
 };
 
 /**
@@ -145,9 +144,9 @@ PlayerLG.prototype.onError = function () {
     var error = this.getPlugin().error;
 
     if(typeof errors[error] !== 'undefined'){
-        log('onError', error, errors[error]);
+        console.log('onError', error, errors[error]);
     } else {
-        log('onError ', error, 'undeclared');
+        console.log('onError ', error, 'undeclared');
     }
 };
 
@@ -160,7 +159,7 @@ PlayerLG.prototype.onError = function () {
  * @param rightsIssuerURL Optional element indicating the value of the rightsIssuerURL that can be used to non-silently obtain the rights for the content item currently being played for which this DRM error is generated, in cases whereby the rightsIssuerURL is known. If different URLs are retrieved from the stream and the metadata, then the conflict resolution is implementation-dependent.
  */
 PlayerLG.prototype.onDRMRightsError = function (errorState, contentID, DRMSystemID, rightsIssuerURL) {
-
+    console.log('DRMRightsError');
 };
 
 
@@ -203,7 +202,7 @@ PlayerLG.prototype._createInterval = function () {
     this._currentTimeInterval = setInterval(function () {
         var currentTime = self.getCurrentTime();
         self.emit('timeupdate', currentTime);
-        log('currentTime', currentTime);
+        console.log('currentTime', currentTime);
     }, 300);
 };
 

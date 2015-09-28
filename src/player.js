@@ -4,7 +4,6 @@ var PlayerSamsung = require('./player.samsung.js'),
     log = require('./log.js');
 
 function VideoPlayer(type, options) {
-    log('video player create', type);
     this.player = this.playerFactory(type, options);
 };
 
@@ -31,6 +30,11 @@ VideoPlayer.prototype.playerFactory = function (type, options) {
 
     player.init();
     return player;
+};
+
+
+VideoPlayer.prototype.getPlugin = function () {
+    return this.player.getPlugin();
 };
 
 
@@ -63,7 +67,6 @@ VideoPlayer.prototype.play = function (seconds) {
     var result = false;
     var player = this.player;
 
-    log('play', 'state', player.states[state], state);
     switch(state){
         case player.STATE_ERROR:
         case player.STATE_NOT_INIT:
@@ -99,12 +102,11 @@ VideoPlayer.prototype.play = function (seconds) {
             //}
             break;
         default:
-            log('state not declared ' + state);
+            console.error('State not declared: ' + state);
             return false;
             break;
     }
 
-    log( 'play result', !!result, 'state',  player.states[this.getState()], this.getState() );
     return result;
 };
 
@@ -115,7 +117,7 @@ VideoPlayer.prototype.startPlayback = function (seconds) {
 
 
 VideoPlayer.prototype.onEvent = function () {
-    log('event');
+    console.log('event');
 };
 
 
@@ -145,7 +147,13 @@ VideoPlayer.prototype.stepBackward = function(seconds){
 
 
 VideoPlayer.prototype.setPlaybackSpeed = function(speed){
+    console.log('setPlaybackSpeed deprecated method use setPlaybackRate');
     return this.player.setPlaybackSpeed(speed);
+};
+
+
+VideoPlayer.prototype.setPlaybackRate = function(speed){
+    return this.player.setPlaybackRate(speed);
 };
 
 

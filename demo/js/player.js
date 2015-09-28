@@ -5,7 +5,6 @@ var PlayerSamsung = require('./player.samsung.js'),
     log = require('./log.js');
 
 function VideoPlayer(type, options) {
-    log('video player create', type);
     this.player = this.playerFactory(type, options);
 };
 
@@ -32,6 +31,11 @@ VideoPlayer.prototype.playerFactory = function (type, options) {
 
     player.init();
     return player;
+};
+
+
+VideoPlayer.prototype.getPlugin = function () {
+    return this.player.getPlugin();
 };
 
 
@@ -64,7 +68,6 @@ VideoPlayer.prototype.play = function (seconds) {
     var result = false;
     var player = this.player;
 
-    log('play', 'state', player.states[state], state);
     switch(state){
         case player.STATE_ERROR:
         case player.STATE_NOT_INIT:
@@ -100,12 +103,11 @@ VideoPlayer.prototype.play = function (seconds) {
             //}
             break;
         default:
-            log('state not declared ' + state);
+            console.error('State not declared: ' + state);
             return false;
             break;
     }
 
-    log( 'play result', !!result, 'state',  player.states[this.getState()], this.getState() );
     return result;
 };
 
@@ -116,7 +118,7 @@ VideoPlayer.prototype.startPlayback = function (seconds) {
 
 
 VideoPlayer.prototype.onEvent = function () {
-    log('event');
+    console.log('event');
 };
 
 
@@ -146,7 +148,13 @@ VideoPlayer.prototype.stepBackward = function(seconds){
 
 
 VideoPlayer.prototype.setPlaybackSpeed = function(speed){
+    console.log('setPlaybackSpeed deprecated method use setPlaybackRate');
     return this.player.setPlaybackSpeed(speed);
+};
+
+
+VideoPlayer.prototype.setPlaybackRate = function(speed){
+    return this.player.setPlaybackRate(speed);
 };
 
 
@@ -226,6 +234,11 @@ function log(){
     console.log( string );
 
     var consoleDom = document.getElementById('console');
+
+    if(false == consoleDom){
+        return;
+    }
+
     var div = document.createElement('div');
     div.innerHTML = string.replace(/(?:\r\n|\r|\n)/g, '<br />');
     consoleDom.appendChild( div );
@@ -296,6 +309,7 @@ function PlayerAbstract (options) {
             heartbeatPeriod: 30
         }
     }, options);
+    this._playbackRate = 1;
 }
 
 
@@ -433,9 +447,8 @@ PlayerAbstract.prototype._setState = function (stateCode) {
     }
 
     this.state = stateCode;
-    log('change status', stateCode, this.getStateName(stateCode));
 
-    var stateName = this.getStateName(stateCode)
+    var stateName = this.getStateName(stateCode);
     this.emit('statechange', stateName);
     return this;
 };
@@ -548,6 +561,23 @@ PlayerAbstract.prototype.setPlaybackSpeed = function (speed) {
 
 /**
  * @abstract
+ * @param rate
+ */
+PlayerAbstract.prototype.setPlaybackRate = function (rate) {
+    throw new Error('setPlaybackRate not implemented');
+};
+
+
+/**
+ * @abstract
+ * @return {number} rate
+ */
+PlayerAbstract.prototype.getPlaybackRate = function () {
+    throw new Error('getPlaybackRate not implemented');
+};
+
+/**
+ * @abstract
  */
 PlayerAbstract.prototype.setScreenSize = function () {
     throw new Error('setScreenSize not implemented');
@@ -633,7 +663,6 @@ extend(PlayerHtml5, PlayerAbstract);
 
 function PlayerHtml5 (options) {
     PlayerHtml5.superclass.constructor.apply(this, arguments);
-    log('player html5 create');
 }
 
 
@@ -664,7 +693,6 @@ PlayerHtml5.prototype.getPlugin = function () {
 
 
 PlayerHtml5.prototype.init = function () {
-    log('init');
     this.getContainer();
     var plugin = this.getPlugin();
     var self = this;
@@ -689,6 +717,39 @@ PlayerHtml5.prototype.init = function () {
 
     plugin.addEventListener('play', function () {
         self.emit('play');
+    });
+
+    plugin.addEventListener('loadedmetadata', function () {
+        self.emit('info', self.getInfo());
+    });
+
+    plugin.addEventListener('loadeddata', function () {
+        self.emit('info', self.getInfo());
+    });
+
+    var lastTime = 0;
+    var bufferingStart = false;
+    plugin.addEventListener('progress', function () {
+        var seconds = self.getCurrentTime();
+        var isWait = lastTime === seconds;
+        lastTime = seconds;
+
+        if(isWait){
+            if(!bufferingStart){
+                bufferingStart = true;
+                self.emit('bufferingstart');
+            }
+
+            self.emit('buffering');
+
+            return;
+        }
+
+        if(bufferingStart){
+            bufferingStart = false
+            self.emit('bufferingend');
+            return;
+        }
     });
 
     this._setSource(this.options.url);
@@ -774,6 +835,19 @@ PlayerHtml5.prototype.setPlaybackSpeed = function (speed) {
 };
 
 
+PlayerHtml5.prototype.setPlaybackRate = function (speed) {
+    this._playBackRate = speed;
+    this.emit('ratechange', this._playBackRate);
+    var rate = parseFloat(this.playBackRate).toFixed(1);
+    this.getPlugin().playbackRate = rate;
+};
+
+
+PlayerHtml5.prototype.getPlaybackRate = function () {
+    return this._playbackRate;
+};
+
+
 PlayerHtml5.prototype.requestFullscreen = function () {
     var windowSize = this.getWindowSize();
     var plugin = this.getPlugin();
@@ -850,7 +924,6 @@ extend(PlayerLG, PlayerAbstract);
  */
 function PlayerLG (options) {
     PlayerLG.superclass.constructor.apply(this, arguments);
-    log('player lg create');
 }
 
 PlayerLG.prototype._currentTimeInterval = null;
@@ -884,7 +957,6 @@ PlayerLG.prototype.getPlugin = function () {
 
 
 PlayerLG.prototype.init = function () {
-    log('init');
     this.getContainer();
     var plugin = this.getPlugin();
     var self = this;
@@ -914,7 +986,10 @@ PlayerLG.prototype.deinit = function () {
 
 
 /**
- * The NetCast Platform provides an onPlayStateChange event in the Media Player plugin object. Developers can receive play state change event. Developer can receive a play state change event when the play state of currently playing media item is changed.
+ * The NetCast Platform provides an onPlayStateChange event in the Media Player plugin object. Developers can
+ * receive play state change event. Developer can receive a play state change event when the play state of currently
+ * playing media item is changed.
+ *
  * To refer to the values of the playState property, see playState.
  */
 PlayerLG.prototype.onPlayStateChange = function () {
@@ -940,12 +1015,10 @@ PlayerLG.prototype.onPlayStateChange = function () {
         this._deleteInterval();
     }
 
-    log('playState', playState, typeof playState);
-
     if(typeof playStates[playState] !== 'undefined'){
-        log('onPlayStateChange', playState, playStates[playState]);
+        console.log('onPlayStateChange', playState, playStates[playState]);
     } else {
-        log('undeclared onPlayStateChange', playState);
+        console.log('undeclared onPlayStateChange', playState);
     }
 };
 
@@ -953,7 +1026,7 @@ PlayerLG.prototype.onPlayStateChange = function () {
  * The NetCast Platform provides an onBuffering event in the Media Player plugin object. Developers can receive buffering event. Developers can receive a buffering event when the media player begins and ends buffering. A Boolean type parameter specifies whether data buffering has started or finished. A value of true indicates that the data buffering has started. Buffering also occurs whenever playback stops and then restarts (either from calls to play() and stop()) methods or when network congestion occurs during playing streamed media.
  */
 PlayerLG.prototype.onBuffering = function () {
-    log('onBuffering', this.getPlugin().bufferingProgress);
+    console.log('onBuffering', this.getPlugin().bufferingProgress);
 };
 
 /**
@@ -983,9 +1056,9 @@ PlayerLG.prototype.onError = function () {
     var error = this.getPlugin().error;
 
     if(typeof errors[error] !== 'undefined'){
-        log('onError', error, errors[error]);
+        console.log('onError', error, errors[error]);
     } else {
-        log('onError ', error, 'undeclared');
+        console.log('onError ', error, 'undeclared');
     }
 };
 
@@ -998,7 +1071,7 @@ PlayerLG.prototype.onError = function () {
  * @param rightsIssuerURL Optional element indicating the value of the rightsIssuerURL that can be used to non-silently obtain the rights for the content item currently being played for which this DRM error is generated, in cases whereby the rightsIssuerURL is known. If different URLs are retrieved from the stream and the metadata, then the conflict resolution is implementation-dependent.
  */
 PlayerLG.prototype.onDRMRightsError = function (errorState, contentID, DRMSystemID, rightsIssuerURL) {
-
+    console.log('DRMRightsError');
 };
 
 
@@ -1041,7 +1114,7 @@ PlayerLG.prototype._createInterval = function () {
     this._currentTimeInterval = setInterval(function () {
         var currentTime = self.getCurrentTime();
         self.emit('timeupdate', currentTime);
-        log('currentTime', currentTime);
+        console.log('currentTime', currentTime);
     }, 300);
 };
 

@@ -3,6 +3,11 @@ function log(){
     console.log( string );
 
     var consoleDom = document.getElementById('console');
+
+    if(false == consoleDom){
+        return;
+    }
+
     var div = document.createElement('div');
     div.innerHTML = string.replace(/(?:\r\n|\r|\n)/g, '<br />');
     consoleDom.appendChild( div );

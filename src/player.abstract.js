@@ -18,6 +18,7 @@ function PlayerAbstract (options) {
             heartbeatPeriod: 30
         }
     }, options);
+    this._playbackRate = 1;
 }
 
 
@@ -155,9 +156,8 @@ PlayerAbstract.prototype._setState = function (stateCode) {
     }
 
     this.state = stateCode;
-    log('change status', stateCode, this.getStateName(stateCode));
 
-    var stateName = this.getStateName(stateCode)
+    var stateName = this.getStateName(stateCode);
     this.emit('statechange', stateName);
     return this;
 };
@@ -267,6 +267,23 @@ PlayerAbstract.prototype.setPlaybackSpeed = function (speed) {
     throw new Error('setPlaybackSpeed not implemented');
 };
 
+
+/**
+ * @abstract
+ * @param rate
+ */
+PlayerAbstract.prototype.setPlaybackRate = function (rate) {
+    throw new Error('setPlaybackRate not implemented');
+};
+
+
+/**
+ * @abstract
+ * @return {number} rate
+ */
+PlayerAbstract.prototype.getPlaybackRate = function () {
+    throw new Error('getPlaybackRate not implemented');
+};
 
 /**
  * @abstract

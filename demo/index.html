@@ -73,49 +73,38 @@
                 </ul>
             </div>
             <div class="col-md-12">
-                <button nv-el class="btn btn-default" id="rbw" onclick="videoPlayer.setPlaybackSpeed(-2)">
+                <button id="rate_backward" nv-el class="btn btn-default">
                     <span class="glyphicon glyphicon-backward"></span> 2x
                 </button>
-                <button nv-el class="btn btn-default" id="jbw" aria-label="fast-backward" onclick="videoPlayer.stepBackward(10000)">
+                <button id="step_backward" nv-el class="btn btn-default" aria-label="fast-backward">
                     <span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
                 </button>
-                <button nv-el class="btn btn-default" id="stop" aria-label="Stop" onclick="videoPlayer.stop()">
+                <button id="stop" nv-el class="btn btn-default"  aria-label="Stop">
                     <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
                 </button>
-                <button nv-el class="btn btn-default" id="pause" aria-label="Pause" onclick="videoPlayer.pause()">
+                <button id="pause" nv-el class="btn btn-default"  aria-label="Pause">
                     <span class="glyphicon glyphicon-pause" aria-hidden="true"></span>
                 </button>
-                <button nv-el nv-el-current class="btn btn-default" id="play" aria-label="Play" onclick="videoPlayer.play()">
+                <button id="play" nv-el nv-el-current class="btn btn-default" aria-label="Play">
                     <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
                 </button>
-                <button nv-el class="btn btn-default" id="jfw" onclick="videoPlayer.stepForward(10000)">
+                <button id="step_forward" nv-el class="btn btn-default">
                     <span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
                 </button>
-                <button nv-el class="btn btn-default" id="fwd" onclick="videoPlayer.setPlaybackSpeed(2)">
+                <button id="rate_forward" nv-el class="btn btn-default">
                     2x <span class="glyphicon glyphicon-forward"></span>
                 </button>
-                <button nv-el class="btn btn-default" id="normalSpeed" onclick="videoPlayer.setPlaybackSpeed(1)">
+                <button id="rate_reset" nv-el class="btn btn-default">
                     1x <span class="glyphicon glyphicon-forward"></span>
                 </button>
-                <button nv-el class="btn btn-default" id="fwd2" onclick="videoPlayer.setCurrentTime(65000)"> to 65 sec </button>
+                <button id="step_to" nv-el class="btn btn-default"> to 65 sec </button>
 
-                <button nv-el class="btn btn-default" id="122" onclick="exitFullscreen()"> <span class="gliphicon glyphicon glyphicon-resize-small"></span> </button>
-                <button nv-el class="btn btn-default" id="123" onclick="requestFullscreen()"> <span class="glyphicon glyphicon-fullscreen"></span> </button>
-                <button nv-el class="btn btn-default" id="124" onclick="videoPlayer.getInfo()"> <span class="glyphicon glyphicon-info-sign"></span> </button>
+                <button id="fullscreen_exit" nv-el class="btn btn-default"> <span class="gliphicon glyphicon glyphicon-resize-small"></span> </button>
+                <button id="fullscreen" nv-el class="btn btn-default"> <span class="glyphicon glyphicon-fullscreen"></span> </button>
+                <button id="getinfo" nv-el class="btn btn-default"> <span class="glyphicon glyphicon-info-sign"></span> </button>
             </div>
         </div>
     </div>
-    <div class="container" id="console"></div>
-
-    <script>
-        function requestFullscreen(){
-            videoPlayer.requestFullscreen();
-        }
-
-        function exitFullscreen() {
-            videoPlayer.exitFullscreen();
-        }
-    </script>
 
     <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>

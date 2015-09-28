@@ -7,7 +7,6 @@ extend(PlayerHtml5, PlayerAbstract);
 
 function PlayerHtml5 (options) {
     PlayerHtml5.superclass.constructor.apply(this, arguments);
-    log('player html5 create');
 }
 
 
@@ -38,7 +37,6 @@ PlayerHtml5.prototype.getPlugin = function () {
 
 
 PlayerHtml5.prototype.init = function () {
-    log('init');
     this.getContainer();
     var plugin = this.getPlugin();
     var self = this;
@@ -63,6 +61,39 @@ PlayerHtml5.prototype.init = function () {
 
     plugin.addEventListener('play', function () {
         self.emit('play');
+    });
+
+    plugin.addEventListener('loadedmetadata', function () {
+        self.emit('info', self.getInfo());
+    });
+
+    plugin.addEventListener('loadeddata', function () {
+        self.emit('info', self.getInfo());
+    });
+
+    var lastTime = 0;
+    var bufferingStart = false;
+    plugin.addEventListener('progress', function () {
+        var seconds = self.getCurrentTime();
+        var isWait = lastTime === seconds;
+        lastTime = seconds;
+
+        if(isWait){
+            if(!bufferingStart){
+                bufferingStart = true;
+                self.emit('bufferingstart');
+            }
+
+            self.emit('buffering');
+
+            return;
+        }
+
+        if(bufferingStart){
+            bufferingStart = false
+            self.emit('bufferingend');
+            return;
+        }
     });
 
     this._setSource(this.options.url);
@@ -145,6 +176,19 @@ PlayerHtml5.prototype.setPlaybackSpeed = function (speed) {
     var rate = parseFloat(speed).toFixed(1);
     
     this.getPlugin().playbackRate = rate;
+};
+
+
+PlayerHtml5.prototype.setPlaybackRate = function (speed) {
+    this._playBackRate = speed;
+    this.emit('ratechange', this._playBackRate);
+    var rate = parseFloat(this.playBackRate).toFixed(1);
+    this.getPlugin().playbackRate = rate;
+};
+
+
+PlayerHtml5.prototype.getPlaybackRate = function () {
+    return this._playbackRate;
 };
 
 
