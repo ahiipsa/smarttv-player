@@ -2,9 +2,18 @@ function Observer() {}
 
 Observer.prototype.listeners = {};
 
+/**
+ *
+ * @param event
+ * @param callback
+ */
 Observer.prototype.on = function (event, callback) {
     if(typeof this.listeners[event] === 'undefined'){
         this.listeners[event] = [];
+    }
+
+    if(typeof callback !== "function"){
+        callback = function () {}
     }
 
     this.listeners[event].push(callback);
