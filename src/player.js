@@ -59,7 +59,7 @@ VideoPlayer.prototype.setOptions = function (options) {
 
 /**
  * Play/pause method
- * @param {number} seconds
+ * @param {number} [seconds]
  * @returns {boolean}
  */
 VideoPlayer.prototype.play = function (seconds) {

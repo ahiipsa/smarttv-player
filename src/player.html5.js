@@ -182,7 +182,7 @@ PlayerHtml5.prototype.setPlaybackSpeed = function (speed) {
 PlayerHtml5.prototype.setPlaybackRate = function (speed) {
     this._playBackRate = speed;
     this.emit('ratechange', this._playBackRate);
-    var rate = parseFloat(this.playBackRate).toFixed(1);
+    var rate = parseFloat(this._playBackRate).toFixed(1);
     this.getPlugin().playbackRate = rate;
 };
 

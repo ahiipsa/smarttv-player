@@ -4,47 +4,47 @@
         videoPlayer.setPlaybackSpeed(-2);
     });
     
-    document.getElementById('step_backward').addEventListener('click', function (click) {
+    document.getElementById('step_backward').addEventListener('click', function () {
         videoPlayer.stepBackward(10000);
     });
     
-    document.getElementById('stop').addEventListener('click', function (click) {
+    document.getElementById('stop').addEventListener('click', function () {
         videoPlayer.stop();
     });
 
-    document.getElementById('pause').addEventListener('click', function (click) {
+    document.getElementById('pause').addEventListener('click', function () {
         videoPlayer.pause();
     });
 
-    document.getElementById('play').addEventListener('click', function (click) {
+    document.getElementById('play').addEventListener('click', function () {
         videoPlayer.play();
     });
 
-    document.getElementById('step_forward').addEventListener('click', function (click) {
+    document.getElementById('step_forward').addEventListener('click', function () {
         videoPlayer.stepForward(10000);
     });
 
-    document.getElementById('rate_forward').addEventListener('click', function (click) {
+    document.getElementById('rate_forward').addEventListener('click', function () {
         videoPlayer.setPlaybackSpeed(2);
     });
 
-    document.getElementById('rate_reset').addEventListener('click', function (click) {
+    document.getElementById('rate_reset').addEventListener('click', function () {
         videoPlayer.setPlaybackSpeed(1);
     });
 
-    document.getElementById('step_to').addEventListener('click', function (click) {
+    document.getElementById('step_to').addEventListener('click', function () {
         videoPlayer.setCurrentTime(65000);
     });
 
-    document.getElementById('fullscreen_exit').addEventListener('click', function (click) {
+    document.getElementById('fullscreen_exit').addEventListener('click', function () {
         videoPlayer.exitFullscreen();
     });
 
-    document.getElementById('fullscreen').addEventListener('click', function (click) {
+    document.getElementById('fullscreen').addEventListener('click', function () {
         videoPlayer.requestFullscreen();
     });
 
-    document.getElementById('getinfo').addEventListener('click', function (click) {
+    document.getElementById('getinfo').addEventListener('click', function () {
         videoPlayer.getInfo();
     });
 
@@ -120,6 +120,7 @@
         });
 
         playerVideo.on('info', function (info) {
+            console.log('info', info);
             document.getElementById('duration').innerText = info.duration;
         });
 
