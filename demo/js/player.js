@@ -253,9 +253,18 @@ function Observer() {}
 
 Observer.prototype.listeners = {};
 
+/**
+ *
+ * @param event
+ * @param callback
+ */
 Observer.prototype.on = function (event, callback) {
     if(typeof this.listeners[event] === 'undefined'){
         this.listeners[event] = [];
+    }
+
+    if(typeof callback !== "function"){
+        callback = function () {}
     }
 
     this.listeners[event].push(callback);
@@ -838,7 +847,7 @@ PlayerHtml5.prototype.setPlaybackSpeed = function (speed) {
 PlayerHtml5.prototype.setPlaybackRate = function (speed) {
     this._playBackRate = speed;
     this.emit('ratechange', this._playBackRate);
-    var rate = parseFloat(this.playBackRate).toFixed(1);
+    var rate = parseFloat(this._playBackRate).toFixed(1);
     this.getPlugin().playbackRate = rate;
 };
 
@@ -1291,10 +1300,10 @@ PlayerSamsungSef.prototype.init = function () {
 
     var params = {
         'trid': '23520697',
-        'DEVICE_ID': this.getOption('duid'),
+        'DEVICE_ID': this.getOption('drm').duid,
         'DEVICE_TYPE_ID': '', // 60
-        'STREAM_ID': this.getOption('streamId'),
-        'IP_ADDR': this.getOption('ip'),
+        'STREAM_ID': this.getOption('drm').streamId,
+        'IP_ADDR': this.getOption('drm').ip,
         'DRM_URL': this.getOption('drm').url,
         'HEARTBEAT_URL': this.getOption('drm').heartbeatUrl,
         'HEARTBEAT_PERIOD': this.getOption('drm').heartbeatPeriod,
@@ -1302,7 +1311,7 @@ PlayerSamsungSef.prototype.init = function () {
         'CUR_TIME': 'PTS',
         'COMPONENT': 'WV',
         'PORTAL': this.getOption('drm').portal,
-        'USER_DATA': this.getOption('userData')
+        'USER_DATA': this.getOption('drm').userData
     };
 
 

@@ -89,10 +89,10 @@ PlayerSamsungSef.prototype.init = function () {
 
     var params = {
         'trid': '23520697',
-        'DEVICE_ID': this.getOption('duid'),
+        'DEVICE_ID': this.getOption('drm').duid,
         'DEVICE_TYPE_ID': '', // 60
-        'STREAM_ID': this.getOption('streamId'),
-        'IP_ADDR': this.getOption('ip'),
+        'STREAM_ID': this.getOption('drm').streamId,
+        'IP_ADDR': this.getOption('drm').ip,
         'DRM_URL': this.getOption('drm').url,
         'HEARTBEAT_URL': this.getOption('drm').heartbeatUrl,
         'HEARTBEAT_PERIOD': this.getOption('drm').heartbeatPeriod,
@@ -100,7 +100,7 @@ PlayerSamsungSef.prototype.init = function () {
         'CUR_TIME': 'PTS',
         'COMPONENT': 'WV',
         'PORTAL': this.getOption('drm').portal,
-        'USER_DATA': this.getOption('userData')
+        'USER_DATA': this.getOption('drm').userData
     };
 
 
