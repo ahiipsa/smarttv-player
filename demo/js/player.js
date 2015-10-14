@@ -941,7 +941,7 @@ PlayerLG.prototype.getPlugin = function () {
     if(!this.plugin){
         var plugin = document.createElement('object');
         plugin.setAttribute('id', 'pluginPlayer');
-        plugin.setAttribute('type', 'video/x-ms-wmv');
+        plugin.setAttribute('type', 'video/mp4');
         plugin.setAttribute('border', '0');
         plugin.setAttribute('width', this.getOption('width'));
         plugin.setAttribute('height', this.getOption('height'));
@@ -975,6 +975,55 @@ PlayerLG.prototype.init = function () {
             return self[fnName].apply(self, arguments);
         };
     };
+
+    var params = {
+        'trid': '23520697',
+        'DEVICE_ID': this.getOption('drm').duid,
+        'DEVICE_TYPE_ID': '', // 60
+        'STREAM_ID': this.getOption('drm').streamId,
+        'IP_ADDR': this.getOption('drm').ip,
+        'DRM_URL': this.getOption('drm').url,
+        'HEARTBEAT_URL': this.getOption('drm').heartbeatUrl,
+        'HEARTBEAT_PERIOD': this.getOption('drm').heartbeatPeriod,
+        'I_SEEK': 'TIME',
+        'CUR_TIME': 'PTS',
+        'COMPONENT': 'WV',
+        'PORTAL': this.getOption('drm').portal,
+        'USER_DATA': this.getOption('drm').userData
+    };
+
+    var queryString = Object.keys( params ).map(function(param){
+        return param + '=' + params[ param ];
+    }).join('|');
+
+    // if DRM
+    if(this.getOption('url').slice(-4) === '.wvm'){
+        /*
+         media.setWidevineDrmURL(DrmServerURL);
+         media.setWidevineDeviceID(DeviceID);
+         media.setWidevineStreamID(StreamID);
+         media.setWidevineClientIP(ClientIP);
+         media.setWidevineUserData(UserData);
+         media.setWidevineDrmAckURL(DrmAckServerURL);
+         media.setWidevineHeartbeatURL(HeartbeatURL);
+         media.setWidevineHeartbeatPeriod(HeartbeatPeriod);
+         media.setWidevineDeviceType(DeviceType);
+         */
+        plugin.setAttribute('type', 'application/x-netcast-av');
+        plugin.setAttribute('drm_type', 'widevine');
+
+        plugin.setWidevineDeviceID(this.getOption('drm').duid);
+        plugin.setWidevinePortalID(this.getOption('drm').portal);
+        plugin.setWidevineDrmURL(this.getOption('drm').url);
+        plugin.setWidevineHeartbeatURL(this.getOption('drm').heartbeatUrl);
+        plugin.setWidevineHeartbeatPeriod(this.getOption('drm').heartbeatPeriod);
+        plugin.setWidevineDeviceType("33");
+        plugin.setWidevineClientIP(this.getOption('drm').ip);
+        plugin.setWidevineStreamID(this.getOption('drm').streamId);
+        plugin.setWidevineUserData(this.getOption('drm').userData);
+
+        this.setOption('url', (this.getOption('url') + '?' + queryString));
+    }
 
     plugin.onPlayStateChange    = createHandler('onPlayStateChange');
     plugin.onBuffering          = createHandler('onBuffering');
@@ -1019,9 +1068,16 @@ PlayerLG.prototype.onPlayStateChange = function () {
         var mediaPlayInfo = plugin.mediaPlayInfo();
         var duration = this.getDuration();
         this.emit('durationchange', duration);
+        this.emit('info', {
+            duration: duration
+        });
         this._createInterval();
     } else {
         this._deleteInterval();
+    }
+
+    if(playState == 5){
+        this.emit('ended');
     }
 
     if(typeof playStates[playState] !== 'undefined'){
@@ -1512,7 +1568,11 @@ PlayerSamsungSef.prototype.setPlaybackRate = function (rate) {
 
 PlayerSamsungSef.prototype.onCustomEvent = function () {
     log('onCustomEvent');
-    log(arguments);
+
+    for (var i = 0; i < arguments.length; i++) {
+        var obj = arguments[i];
+        log('arg' + i, obj);
+    }
 
     var args = Object.keys(arguments).map(function (name) {
         return arguments[name];
