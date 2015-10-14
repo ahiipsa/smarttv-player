@@ -4,7 +4,7 @@ function log(){
 
     var consoleDom = document.getElementById('console');
 
-    if(false == consoleDom){
+    if(null == consoleDom){
         return;
     }
 

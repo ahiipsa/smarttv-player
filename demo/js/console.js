@@ -5,9 +5,12 @@
 
         var consoleDom = document.getElementById('console');
 
+        console.log('consoleDom', consoleDom);
         if(!consoleDom){
+
             return;
         }
+        return;
 
         var div = document.createElement('div');
         div.innerHTML = string.replace(/(?:\r\n|\r|\n)/g, '<br />');

@@ -235,7 +235,7 @@ function log(){
 
     var consoleDom = document.getElementById('console');
 
-    if(false == consoleDom){
+    if(null == consoleDom){
         return;
     }
 
@@ -1505,6 +1505,11 @@ PlayerSamsungSef.prototype.setPlaybackSpeed = function (speed) {
 };
 
 
+PlayerSamsungSef.prototype.setPlaybackRate = function (rate) {
+    return this.execute('SetPlaybackSpeed', rate);
+};
+
+
 PlayerSamsungSef.prototype.onCustomEvent = function () {
     log('onCustomEvent');
     log(arguments);
@@ -1614,7 +1619,6 @@ PlayerSamsungSef.prototype.getCurrentTime = function () {
 
 
 PlayerSamsungSef.prototype.getInfo = function () {
-
     log('GET INFO');
 
     this.duration = this.timeToMseconds(this.execute('GetDuration'));

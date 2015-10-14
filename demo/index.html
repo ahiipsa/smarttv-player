@@ -47,7 +47,9 @@
     <div class="container" nv-scope="main" nv-scope-current>
         <div class="row">
             <div class="col-md-6">
+                <!-- Player -->
                 <div id="playerContainer" class="center-block"></div>
+                <!-- Timeline-->
                 <div class="col-md-12">
                     <div class="progress">
                         <div id="progressbar" class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
@@ -60,6 +62,38 @@
                         <p id="duration">0</p>
                     </div>
                 </div>
+                <!-- Controls-->
+                <div class="col-md-12">
+                    <button id="rate_backward" nv-el class="btn btn-default">
+                        <span class="glyphicon glyphicon-backward"></span> 2x
+                    </button>
+                    <button id="step_backward" nv-el class="btn btn-default" aria-label="fast-backward">
+                        <span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
+                    </button>
+                    <button id="stop" nv-el class="btn btn-default"  aria-label="Stop">
+                        <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+                    </button>
+                    <button id="pause" nv-el class="btn btn-default"  aria-label="Pause">
+                        <span class="glyphicon glyphicon-pause" aria-hidden="true"></span>
+                    </button>
+                    <button id="play" nv-el nv-el-current class="btn btn-default" aria-label="Play">
+                        <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                    </button>
+                    <button id="step_forward" nv-el class="btn btn-default">
+                        <span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
+                    </button>
+                    <button id="rate_forward" nv-el class="btn btn-default">
+                        2x <span class="glyphicon glyphicon-forward"></span>
+                    </button>
+                    <button id="rate_reset" nv-el class="btn btn-default">
+                        1x <span class="glyphicon glyphicon-forward"></span>
+                    </button>
+                    <button id="step_to" nv-el class="btn btn-default"> to 65 sec </button>
+
+                    <button id="fullscreen_exit" nv-el class="btn btn-default"> <span class="gliphicon glyphicon glyphicon-resize-small"></span> </button>
+                    <button id="fullscreen" nv-el class="btn btn-default"> <span class="glyphicon glyphicon-fullscreen"></span> </button>
+                    <button id="getinfo" nv-el class="btn btn-default"> <span class="glyphicon glyphicon-info-sign"></span> </button>
+                </div>
             </div>
             <div class="col-md-6">
                 <ul class="list-group">
@@ -71,37 +105,6 @@
                     <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://yt-dash-mse-test.commondatastorage.googleapis.com/media/car-20120827-manifest.mpd')">google sample</a> (over)</li>
                     <li class="list-group-item"><a nv-el href="#" onclick="videoPlayer.setVideo('http://cdp.look1.ru/video/37bdaa51-808f-4d51-8eb0-87cf45713ea9/37bdaa51-808f-4d51-8eb0-87cf45713ea9.mpd')">sintel dash</a> (cdp)</li>
                 </ul>
-            </div>
-            <div class="col-md-12">
-                <button id="rate_backward" nv-el class="btn btn-default">
-                    <span class="glyphicon glyphicon-backward"></span> 2x
-                </button>
-                <button id="step_backward" nv-el class="btn btn-default" aria-label="fast-backward">
-                    <span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
-                </button>
-                <button id="stop" nv-el class="btn btn-default"  aria-label="Stop">
-                    <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
-                </button>
-                <button id="pause" nv-el class="btn btn-default"  aria-label="Pause">
-                    <span class="glyphicon glyphicon-pause" aria-hidden="true"></span>
-                </button>
-                <button id="play" nv-el nv-el-current class="btn btn-default" aria-label="Play">
-                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-                </button>
-                <button id="step_forward" nv-el class="btn btn-default">
-                    <span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
-                </button>
-                <button id="rate_forward" nv-el class="btn btn-default">
-                    2x <span class="glyphicon glyphicon-forward"></span>
-                </button>
-                <button id="rate_reset" nv-el class="btn btn-default">
-                    1x <span class="glyphicon glyphicon-forward"></span>
-                </button>
-                <button id="step_to" nv-el class="btn btn-default"> to 65 sec </button>
-
-                <button id="fullscreen_exit" nv-el class="btn btn-default"> <span class="gliphicon glyphicon glyphicon-resize-small"></span> </button>
-                <button id="fullscreen" nv-el class="btn btn-default"> <span class="glyphicon glyphicon-fullscreen"></span> </button>
-                <button id="getinfo" nv-el class="btn btn-default"> <span class="glyphicon glyphicon-info-sign"></span> </button>
             </div>
         </div>
     </div>

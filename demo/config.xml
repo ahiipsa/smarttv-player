@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget>
+	<name itemtype="string">SmartTV Player</name>
+	<widgetname itemtype="string">SmartTV Player</widgetname>
+	<organization itemtype="string">Look 1</organization>
+	<description itemtype="string">video player</description>
+	<ver itemtype="string">1.409</ver>
+	<mouse>y</mouse>
+	<previewjs itemtype="string"></previewjs>
+	<preicon itemtype="string"></preicon>
+	<cpname itemtype="string"></cpname>
+	<cplogo itemtype="string"></cplogo>
+	<cpauthjs itemtype="string"></cpauthjs>
+	<mgrver itemtype="string"></mgrver>
+	<fullwidget itemtype="boolean">y</fullwidget>
+	<srcctl itemtype="boolean">y</srcctl>
+	<ticker itemtype="boolean">n</ticker>
+	<childlock itemtype="boolean">n</childlock>
+	<audiomute itemtype="boolean">n</audiomute>
+	<videomute itemtype="boolean">y</videomute>
+	<dcont itemtype="boolean">y</dcont>
+	<width itemtype="number">1280</width>
+	<height itemtype="number">720</height>
+	<author itemtype="group">
+		<email itemtype="string">help@look1.ru</email>
+		<link itemtype="string">https://www.look1.ru</link>
+	</author>
+    <category itemtype="string">video</category>
+	<apptype itemtype="number">11</apptype>
+    <ThumbIconHD itemtype="string">img/icon_115.png</ThumbIconHD>
+    <BigListIconHD itemtype="string">img/icon_95.png</BigListIconHD>
+    <ListIconHD itemtype="string">img/icon_85.png</ListIconHD>
+    <BigThumbIconHD itemtype="string">img/icon_115.png</BigThumbIconHD>
+    <ThumbIcon itemtype="string">img/icon_115.png</ThumbIcon>
+    <BigThumbIcon itemtype="string">img/icon_115.png</BigThumbIcon>
+    <BigListIcon itemtype="string">img/icon_95.png</BigListIcon>
+    <ListIcon itemtype="string">img/icon_85.png</ListIcon>
+</widget>
