@@ -554,6 +554,7 @@ PlayerSamsungSef.prototype.onRenderingStart = function() {
  */
 PlayerSamsungSef.prototype.onRenderingComplete = function() {
     log('onRenderingComplete');
+    this.emit('ended');
     this.stop();
 };
 

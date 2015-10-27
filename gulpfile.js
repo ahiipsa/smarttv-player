@@ -49,7 +49,7 @@ gulp.task('watch', function () {
 });
 
 gulp.task('connect', function() {
-    connect.server({root: 'demo'});
+    connect.server({root: 'demo', port: 8082});
 });
 
 
