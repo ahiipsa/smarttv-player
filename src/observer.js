@@ -1,13 +1,15 @@
 function Observer() {}
 
-Observer.prototype.listeners = {};
-
 /**
  *
  * @param event
  * @param callback
  */
 Observer.prototype.on = function (event, callback) {
+    if(!this.listeners){
+        this.listeners = {};
+    }
+
     if(typeof this.listeners[event] === 'undefined'){
         this.listeners[event] = [];
     }
@@ -21,6 +23,10 @@ Observer.prototype.on = function (event, callback) {
 
 
 Observer.prototype.off = function (event, callback) {
+    if(!this.listeners){
+        this.listeners = {};
+    }
+
     var index = this.listeners[event].indexOf(callback);
     if(index !== 0){
         this.listeners[event].splice(index, 1);
@@ -32,6 +38,9 @@ Observer.prototype.off = function (event, callback) {
  * @param event {string}
  */
 Observer.prototype.emit = function (event) {
+    if(!this.listeners){
+        return;
+    }
     var listeners = this.listeners[event];
 
     if( typeof listeners === 'undefined' || listeners.length == 0 ){
