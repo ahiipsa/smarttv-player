@@ -564,6 +564,7 @@ PlayerSamsungSef.prototype.onRenderingComplete = function() {
  */
 PlayerSamsungSef.prototype.onBufferingStart = function() {
     log('onBufferingStart');
+    this.emit('bufferingstart');
 };
 
 
@@ -572,6 +573,7 @@ PlayerSamsungSef.prototype.onBufferingStart = function() {
  */
 PlayerSamsungSef.prototype.onBufferingComplete = function() {
     log('onBufferingComplete');
+    this.emit('bufferingend');
 };
 
 
@@ -582,6 +584,7 @@ PlayerSamsungSef.prototype.onBufferingComplete = function() {
  */
 PlayerSamsungSef.prototype.onBufferingProgress = function(percent) {
     log('onBufferingProgress', 'percent', percent);
+    this.emit('buffering', percent);
 };
 
 
