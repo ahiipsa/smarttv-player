@@ -1513,12 +1513,12 @@ PlayerSamsungSef.prototype.setCurrentTime = function (ms) {
     var jump = 0;
 
     if(ms > this.currentTime){
-        jump = ms - currentTime;
+        jump = this.msecondsToPlugin( (ms - currentTime) );
         return this.execute('JumpForward', jump );
     }
 
     if(ms < this.currentTime){
-        jump = currentTime - ms;
+        jump = this.msecondsToPlugin( (currentTime - ms) );
         return this.execute('JumpBackward', jump );
     }
 };
@@ -1887,7 +1887,7 @@ PlayerSamsungSef.prototype.timeToMseconds = function (time) {
 
 
 PlayerSamsungSef.prototype.msecondsToPlugin = function (mseconds) {
-    return mseconds;
+    return Math.round(mseconds / 1000);
 };
 
 
